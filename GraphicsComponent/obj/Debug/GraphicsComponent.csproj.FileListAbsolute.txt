@@ -1,0 +1,9 @@
+C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent.csprojResolveAssemblyReference.cache
+C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent.baml
+C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent.g.cs
+C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent_MarkupCompile.cache
+C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent.g.resources
+C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\bin\Debug\GraphicsComponent.dll
+C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\bin\Debug\GraphicsComponent.pdb
+C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent.dll
+C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent.pdb
