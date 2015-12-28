@@ -1,0 +1,6 @@
+/DiplomPonomarev/bin
+/DiplomPonomarev/obj
+*.suo
+*.cachefile
+*.user
+*.pfx
