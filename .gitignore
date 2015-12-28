@@ -1,5 +1,6 @@
 /DiplomPonomarev/bin
 /DiplomPonomarev/obj
+/lib/DirectX
 /lib/SharpDX
 *.suo
 *.cachefile
