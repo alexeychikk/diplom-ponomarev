@@ -192,6 +192,7 @@ namespace DiplomPonomarev
 
         public void RefreshRectanglesAsync()
         {
+            if (rectangles.Count < 1) return;
             Stopwatch sw = new Stopwatch();
             sw.Start();
             for (int i = 0; i < rectangles.Count; i++)
@@ -235,8 +236,8 @@ namespace DiplomPonomarev
 
         public void VisualSortBubble()
         {
+            if (rectangles.Count < 1) return;
             sorting = true;
-
             long delay = 30000000 / (rectangles.Count * (rectangles.Count - 1));
             Stopwatch sw = new Stopwatch();
             sw.Start();
