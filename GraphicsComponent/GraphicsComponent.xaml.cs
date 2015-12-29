@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace GraphicsComponent
 {
-    /// <summary>
-    /// Логика взаимодействия для GraphicsComponent.xaml
-    /// </summary>
     public partial class GraphicsComponent : UserControl
     {
         public GraphicsComponent()
