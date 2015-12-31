@@ -9,6 +9,8 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Media.Animation;
+using System.Windows;
 using System.Diagnostics;
 using System.Threading;
 
@@ -18,7 +20,7 @@ namespace DiplomPonomarev
     {
         Canvas canvas;
         Random rnd = new Random();
-        public double recWidth = 2;
+        public double recWidth = 15;
         public double minRecWidth = 2;
         public double maxRecWidth = 20;
         public double scaling = 0.2;
@@ -29,37 +31,92 @@ namespace DiplomPonomarev
         public double offsetBetween = 1;
         public int startRecsCount;
         public int recsPerAction;
-        public int addRecsCount = 20;
-        public int removeRecsCount = 20;
+        public int addRecsCount;
+        public int removeRecsCount;
         public int recDelay = 1;
         public bool sorting = false;
-        List<Rectangle> rectangles = new List<Rectangle>();
+        public int recsTransforming = 0;
+        List<Rectangle> recs = new List<Rectangle>();
 
-        Brush b1, b2, b3, b4;
+        DoubleAnimation animAppearOpacity;
+        ColorAnimation animRefreshColor;
+        DoubleAnimation animTransformHeight;
+        DoubleAnimation animTransformRadiusX;
+        DoubleAnimation animTransformRadiusY;
+        DoubleAnimation animTransformTop;
+        DoubleAnimation animSwapLeft;
 
         public Form1()
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
+            
+            cmbStruct.SelectedIndex = 0;
+            cmbSortType.SelectedIndex = 1;
 
             canvas = this.graphicsComponent.canvasGraphics;
             canvas.Focusable = true;
             canvas.MouseWheel += canvas_MouseWheel;
             canvas.MouseEnter += canvas_MouseEnter;
 
-            b1 = (SolidColorBrush)(new BrushConverter().ConvertFrom("#e9d700"));
-            b2 = (SolidColorBrush)(new BrushConverter().ConvertFrom("#a39600"));
-            b3 = (SolidColorBrush)(new BrushConverter().ConvertFrom("#5d5600"));
-            b4 = (SolidColorBrush)(new BrushConverter().ConvertFrom("#171500"));
+            graphicsComponent.storybAppear = new Storyboard();
+            graphicsComponent.storybRefresh = new Storyboard();
+            graphicsComponent.storybTransform = new Storyboard();
+            graphicsComponent.storybSwap = new Storyboard();
 
+            graphicsComponent.storybTransform.Completed += storybTransform_Completed;
+
+            animAppearOpacity = new DoubleAnimation();
+            animAppearOpacity.From = 0.0;
+            animAppearOpacity.To = 1.0;
+            animAppearOpacity.Duration = new Duration(TimeSpan.FromMilliseconds(800));
+            Storyboard.SetTargetProperty(animAppearOpacity, new PropertyPath(Rectangle.OpacityProperty));
+
+            animRefreshColor = new ColorAnimation();
+            animRefreshColor.From = Colors.Yellow;
+            animRefreshColor.To = Colors.Black;
+            animRefreshColor.Duration = new Duration(TimeSpan.FromMilliseconds(100));
+            Storyboard.SetTargetProperty(animRefreshColor, new PropertyPath("Fill.Color"));
+
+            animTransformHeight = new DoubleAnimation();
+            animTransformHeight.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+            Storyboard.SetTargetProperty(animTransformHeight, new PropertyPath(Rectangle.HeightProperty));
+
+            animTransformRadiusX = new DoubleAnimation();
+            animTransformRadiusX.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+            Storyboard.SetTargetProperty(animTransformRadiusX, new PropertyPath(Rectangle.RadiusXProperty));
+
+            animTransformRadiusY = new DoubleAnimation();
+            animTransformRadiusY.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+            Storyboard.SetTargetProperty(animTransformRadiusY, new PropertyPath(Rectangle.RadiusYProperty));
+
+            animTransformTop = new DoubleAnimation();
+            Storyboard.SetTargetProperty(animTransformTop, new PropertyPath(Canvas.TopProperty));
+            animTransformTop.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+
+            animSwapLeft = new DoubleAnimation();
+            Storyboard.SetTargetProperty(animSwapLeft, new PropertyPath(Canvas.LeftProperty));
+            animSwapLeft.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+
+            graphicsComponent.storybAppear.Children.Add(animAppearOpacity);
+            graphicsComponent.storybRefresh.Children.Add(animRefreshColor);
+            graphicsComponent.storybTransform.Children.Add(animTransformHeight);
+            graphicsComponent.storybTransform.Children.Add(animTransformRadiusX);
+            graphicsComponent.storybTransform.Children.Add(animTransformRadiusY);
+            graphicsComponent.storybTransform.Children.Add(animTransformTop);
+            graphicsComponent.storybSwap.Children.Add(animSwapLeft);
 
             CalculateRecsCount();
-            for (int i = 0; i < startRecsCount; i++)
+            addRecsCount = startRecsCount;
+            AddRecsAsync().ContinueWith(task =>
             {
-                double height = rnd.Next(minRecHeight, maxRecHeight);
-                AddRectangle(recWidth, height, i * (recWidth + offsetBetween) + offsetSides, maxRecHeight - height + offsetTop);
-            }
-            addRecsCount = removeRecsCount = recsPerAction = rectangles.Count / 8;
+                addRecsCount = removeRecsCount = recsPerAction = recs.Count / 8;
+            });
+        }
+
+        void storybTransform_Completed(object sender, EventArgs e)
+        {
+            recsTransforming--;
         }
 
         void canvas_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -71,7 +128,7 @@ namespace DiplomPonomarev
         {
             if (sorting) return;
             double newWidth = 0;
-            bool add = (rectangles.Count + 1) * (recWidth + offsetBetween) + offsetSides * 2 >= elementHost1.Width;
+            bool add = (recs.Count + 1) * (recWidth + offsetBetween) + offsetSides * 2 >= elementHost1.Width;
 
             if (e.Delta < 0) newWidth = recWidth - recWidth * scaling;
             else if (e.Delta > 0) newWidth = recWidth + recWidth * scaling;
@@ -88,20 +145,20 @@ namespace DiplomPonomarev
             else recWidth = newWidth;
 
             CalculateRecsCount();
-            if (startRecsCount < rectangles.Count)
+            if (startRecsCount < recs.Count)
             {
-                removeRecsCount = rectangles.Count - startRecsCount;
-                RemoveRectangles();
+                removeRecsCount = recs.Count - startRecsCount;
+                RemoveRecs();
             }
-            else if (startRecsCount > rectangles.Count && add)
+            else if (startRecsCount > recs.Count && add)
             {
-                addRecsCount = startRecsCount - rectangles.Count;
-                AddRectangles();
+                addRecsCount = startRecsCount - recs.Count;
+                AddRecs();
             }
-            for (int i = 0; i < rectangles.Count; i++)
+            for (int i = 0; i < recs.Count; i++)
             {
-                Canvas.SetLeft(rectangles[i], i * (recWidth + offsetBetween) + offsetSides);
-                rectangles[i].Width = recWidth;
+                Canvas.SetLeft(recs[i], i * (recWidth + offsetBetween) + offsetSides);
+                recs[i].Width = recWidth;
             }
             recsPerAction = startRecsCount / 8;
         }
@@ -111,122 +168,130 @@ namespace DiplomPonomarev
             startRecsCount = (int)((this.elementHost1.Width - offsetSides * 2) / (recWidth + offsetBetween));
         }
 
-        public void AddRectangles()
-        {
-            for (int i = 0; i < addRecsCount; i++)
-            {
-                if (rectangles.Count * (recWidth + offsetBetween) + offsetSides * 2 >= elementHost1.Width) return;
-                double height = rnd.Next(minRecHeight, maxRecHeight);
-                AddRectangle(recWidth, height,
-                    (Math.Abs(rectangles.Count - 1)) * (recWidth + offsetBetween) + offsetSides, maxRecHeight - height + offsetTop);
-            }
-            addRecsCount = recsPerAction;
-        }
-
-        public void AddRectanglesAsync()
-        {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            for (int i = 0; i < addRecsCount; i++)
-            {
-                SafeInvoke(() => {
-                    try
-                    {
-                        if (rectangles.Count * (recWidth + offsetBetween) + offsetSides * 2 >= elementHost1.Width) return;
-                        double height = rnd.Next(minRecHeight, maxRecHeight);
-                        AddRectangle(recWidth, height,
-                            (Math.Abs(rectangles.Count - 1)) * (recWidth + offsetBetween) + offsetSides, maxRecHeight - height + offsetTop);
-                    }
-                    catch { }
-                });
-                while (sw.ElapsedTicks < i * 1000000 / recsPerAction) { }
-            }
-            addRecsCount = recsPerAction;
-            sw.Reset();
-        }
-
-        public void RemoveRectangles()
-        {
-            for (int i = 0; i < removeRecsCount; i++)
-            {
-                if (rectangles.Count == 0) return;
-                Rectangle r = rectangles.Last();
-                canvas.Children.Remove(r);
-                rectangles.Remove(r);
-            }
-            removeRecsCount = recsPerAction;
-        }
-
-        public void RemoveRectanglesAsync()
-        {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            for (int i = 0; i < removeRecsCount; i++)
-            {
-                if (rectangles.Count == 0) return;
-                SafeInvoke(() => {
-                    try
-                    {
-                        Rectangle r = rectangles.Last();
-                        canvas.Children.Remove(r);
-                        rectangles.Remove(r);
-                    }
-                    catch { }
-                });
-                while (sw.ElapsedTicks < i * 1000000 / recsPerAction) { }
-            }
-            removeRecsCount = recsPerAction;
-            sw.Reset();
-        }
-
-        public void AddRectangle(double width, double height, double x, double y)
+        public void AddRec(double width, double height, double x, double y)
         {
             Rectangle r = new Rectangle();
             r.Width = width; r.Height = height; r.Fill = Brushes.Black;
-            r.RadiusX = 2; r.RadiusY = 2;
+            r.RadiusX = 2; r.RadiusY = 2; r.Opacity = 0.0;
             Canvas.SetLeft(r, x);
             Canvas.SetTop(r, y);
             canvas.Children.Add(r);
-            rectangles.Add(r);
+            recs.Add(r);
+            Storyboard.SetTarget(animAppearOpacity, r);
+            graphicsComponent.storybAppear.Begin(graphicsComponent);
         }
 
-        public void RefreshRectanglesAsync()
+        public bool EnoughSpace()
         {
-            if (rectangles.Count < 1) return;
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            for (int i = 0; i < rectangles.Count; i++)
-            {
-                SafeInvoke(() => {
-                    try
-                    {
-                        rectangles[i].Height = rnd.Next(minRecHeight, maxRecHeight);
-                        Canvas.SetTop(rectangles[i], maxRecHeight - rectangles[i].Height + offsetTop);
-                        if (i - 4 >= 0) rectangles[i - 4].Fill = Brushes.Black;
-                        if (i - 3 >= 0) rectangles[i - 3].Fill = b4;
-                        if (i - 2 >= 0) rectangles[i - 2].Fill = b3;
-                        if (i - 1 >= 0) rectangles[i - 1].Fill = b2;
-                        rectangles[i].Fill = b1;
-                    }
-                    catch { }
-                });
-                while (sw.ElapsedTicks < i * 2000000 / rectangles.Count) { }
-            }
-            sw.Reset();
+            return (recs.Count + 1) * (recWidth + offsetBetween) - offsetBetween + offsetSides * 2 <= elementHost1.Width;
+        }
 
-            sw.Start();
-            for (int i = 4; i > -1; i--)
+        public void AddRecs()
+        {
+            for (int i = 0; i < addRecsCount; i++)
             {
-                SafeInvoke(() => {
-                    try
-                    {
-                        rectangles[rectangles.Count - i - 1].Fill = Brushes.Black;
-                    }
-                    catch { }
-                });
-                while (sw.ElapsedTicks < (4 - i) * 2000000 / rectangles.Count) { }
+                if (!EnoughSpace()) return;
+                double height = rnd.Next(minRecHeight, maxRecHeight);
+                AddRec(recWidth, height, recs.Count * (recWidth + offsetBetween) + offsetSides, maxRecHeight - height + offsetTop);
             }
-            sw.Reset();
+            addRecsCount = recsPerAction;
+        }
+
+        public Task AddRecsAsync()
+        {
+            int addedCount = 0;
+            return Task.Run(() =>
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                for (int i = 0; i < addRecsCount; i++)
+                {
+                    SafeInvoke(() =>
+                    {
+                        try
+                        {
+                            if (!EnoughSpace()) return;
+                            double height = rnd.Next(minRecHeight, maxRecHeight);
+                            AddRec(recWidth, height, recs.Count * (recWidth + offsetBetween) + offsetSides, maxRecHeight - height + offsetTop);
+                            addedCount++;
+                        }
+                        catch (Exception e) { }
+                    });
+                    while (sw.ElapsedTicks < i * 1000000 / addRecsCount || addedCount <= i) { }
+                }
+                addRecsCount = recsPerAction;
+                sw.Reset();
+            });
+        }
+
+        public void RemoveRec()
+        {
+            if (recs.Count == 0) return;
+            Rectangle r = recs.Last();
+            canvas.Children.Remove(r);
+            recs.Remove(r);
+        }
+
+        public void RemoveRecs()
+        {
+            for (int i = 0; i < removeRecsCount; i++)
+            {
+                RemoveRec();
+            }
+            removeRecsCount = recsPerAction;
+        }
+
+        public Task RemoveRecAsync()
+        {
+            int removedCount = 0;
+            return Task.Run(() =>
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                for (int i = 0; i < removeRecsCount; i++)
+                {
+                    SafeInvoke(() =>
+                    {
+                        try
+                        {
+                            RemoveRec();
+                            removedCount++;
+                        }
+                        catch { }
+                    });
+                    while (sw.ElapsedTicks < i * 1000000 / removeRecsCount || removedCount <= i) { }
+                }
+                removeRecsCount = recsPerAction;
+                sw.Reset();
+            });
+        }
+
+        public Task RefreshRecsAsync()
+        {
+            int refreshedCount = 0;
+            return Task.Run(() =>
+            {
+                if (recs.Count < 1) return;
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                for (int i = 0; i < recs.Count; i++)
+                {
+                    SafeInvoke(() =>
+                    {
+                        try
+                        {
+                            recs[i].Height = rnd.Next(minRecHeight, maxRecHeight);
+                            Canvas.SetTop(recs[i], maxRecHeight - recs[i].Height + offsetTop);
+                            Storyboard.SetTarget(animRefreshColor, recs[i]);
+                            graphicsComponent.storybRefresh.Begin(graphicsComponent);
+                            refreshedCount++;
+                        }
+                        catch (Exception e) { }
+                    });
+                    while (sw.ElapsedTicks < i * 2000000 / recs.Count || refreshedCount <= i) { }
+                }
+                sw.Reset();
+            });
         }
 
         public void SafeInvoke(Action a)
@@ -234,83 +299,109 @@ namespace DiplomPonomarev
             graphicsComponent.Dispatcher.Invoke(a, System.Windows.Threading.DispatcherPriority.Background);
         }
 
-        public void VisualSortBubble()
+        public Task VisualSortBubble()
         {
-            if (rectangles.Count < 1) return;
-            sorting = true;
-            long delay = 30000000 / (rectangles.Count * (rectangles.Count - 1));
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            Rectangle prevRecj = null, prevReci = null;
-            for (int i = 0; i < rectangles.Count - 1; i++)
+            return Task.Run(() =>
             {
-                SafeInvoke(() =>
+                if (recs.Count < 1) return;
+                sorting = true;
+                long delay = 30000000 / (recs.Count * (recs.Count - 1));
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                Rectangle prevRecj = null, prevReci = null;
+                for (int i = 0; i < recs.Count - 1; i++)
                 {
-                    if (prevReci != null) prevReci.Fill = Brushes.Black;
-                    rectangles[i].Fill = Brushes.Blue;
-                });
-                for (int j = i + 1; j < rectangles.Count; j++)
+                    SafeInvoke(() =>
+                    {
+                        if (prevReci != null) prevReci.Fill = Brushes.Black;
+                        recs[i].Fill = Brushes.Blue;
+                    });
+                    for (int j = i + 1; j < recs.Count; j++)
+                    {
+                        SafeInvoke(() =>
+                        {
+                            try
+                            {
+                                if (prevRecj != null) prevRecj.Fill = Brushes.Black;
+                                recs[j].Fill = Brushes.Red;
+                                if (recs[j].Height < recs[i].Height)
+                                {
+                                    double temp = Canvas.GetLeft(recs[i]);
+                                    Canvas.SetLeft(recs[i], Canvas.GetLeft(recs[j]));
+                                    Canvas.SetLeft(recs[j], temp);
+                                    Rectangle r = recs[i];
+                                    recs[i] = recs[j];
+                                    recs[j] = r;
+                                    recs[i].Fill = Brushes.Blue;
+                                    TransformRec(recs[i]);
+                                    TransformRec(recs[j]);
+                                }
+                                prevRecj = recs[j];
+                            }
+                            catch { }
+                        });
+                        while (sw.ElapsedTicks < delay || recsTransforming > 0) { }
+                        sw.Restart();
+                    }
+                    prevReci = recs[i];
+                }
+                sw.Reset();
+
+                sw.Start();
+                for (int i = 2; i > -1; i--)
                 {
-                    SafeInvoke(() => {
+                    SafeInvoke(() =>
+                    {
                         try
                         {
-                            if (prevRecj != null) prevRecj.Fill = Brushes.Black;
-                            rectangles[j].Fill = Brushes.Red;
-                            if (rectangles[j].Height < rectangles[i].Height)
-                            {
-                                double temp = Canvas.GetLeft(rectangles[i]);
-                                Canvas.SetLeft(rectangles[i], Canvas.GetLeft(rectangles[j]));
-                                Canvas.SetLeft(rectangles[j], temp);
-                                Rectangle r = rectangles[i];
-                                rectangles[i] = rectangles[j];
-                                rectangles[j] = r;
-                                rectangles[i].Fill = Brushes.Blue;
-                            }
-                            prevRecj = rectangles[j];
+                            recs[recs.Count - i - 1].Fill = Brushes.Black;
                         }
                         catch { }
                     });
-                    while (sw.ElapsedTicks < delay) { }
-                    sw.Restart();
+                    while (sw.ElapsedTicks < (2 - i) * 2000000 / recs.Count) { }
                 }
-                prevReci = rectangles[i];
-            }
-            sw.Reset();
+                sw.Reset();
+                sorting = false;
+            });
+        }
 
-            sw.Start();
-            for (int i = 2; i > -1; i--)
-            {
-                SafeInvoke(() => {
-                    try
-                    {
-                        rectangles[rectangles.Count - i - 1].Fill = Brushes.Black;
-                    }
-                    catch { }
-                });
-                while (sw.ElapsedTicks < (2 - i) * 2000000 / rectangles.Count) { }
-            }
-            sw.Reset();
-            sorting = false;
+        public void TransformRec(Rectangle r)
+        {
+            recsTransforming++;
+            animTransformHeight.To = r.Width;
+            animTransformRadiusX.To = r.Width / 2;
+            animTransformRadiusY.To = r.Width / 2;
+            animTransformTop.To = Canvas.GetTop(r) + r.Height + 5;
+            Storyboard.SetTarget(animTransformHeight, r);
+            Storyboard.SetTarget(animTransformRadiusX, r);
+            Storyboard.SetTarget(animTransformRadiusY, r);
+            Storyboard.SetTarget(animTransformTop, r);
+            graphicsComponent.storybTransform.Begin(graphicsComponent);
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            Task.Run((Action)AddRectanglesAsync);
+            AddRecsAsync();
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
-            Task.Run((Action)RemoveRectanglesAsync);
+            RemoveRecAsync();
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
-            Task.Run((Action)RefreshRectanglesAsync);
+            RefreshRecsAsync();
         }
 
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
-            Task.Run((Action)VisualSortBubble);
+            VisualSortBubble();
+        }
+
+        private void toolStripButton2_Click_1(object sender, EventArgs e)
+        {
+            TransformRec(recs[0]);
         }
     }
 }
