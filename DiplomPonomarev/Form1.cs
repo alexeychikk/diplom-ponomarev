@@ -20,7 +20,7 @@ namespace DiplomPonomarev
     {
         Canvas canvas;
         Random rnd = new Random();
-        public double recWidth = 15;
+        public double recWidth = 20;
         public double minRecWidth = 2;
         public double maxRecWidth = 20;
         public double scaling = 0.2;
@@ -29,6 +29,12 @@ namespace DiplomPonomarev
         public double offsetTop = 20;
         public double offsetSides = 20;
         public double offsetBetween = 1;
+        public double recRadius = 2;
+        public double animSpeed = 1;
+        public double animSpeedMin = 0.1;
+        public double animSpeedMax = 10;
+        public double animMSDefualt = 200;
+        public double animMSSwap = 300;
         public int startRecsCount;
         public int recsPerAction;
         public int addRecsCount;
@@ -36,6 +42,12 @@ namespace DiplomPonomarev
         public int recDelay = 1;
         public bool sorting = false;
         public int recsTransforming = 0;
+        public int recsSwaping = 0;
+        public bool transformingDown;
+        public bool fullSwapEnd = true;
+        public bool animateCircles = true, animateCirclesStart = false;
+        public Rectangle reci, recj;
+        public double reciHeight, reciTop, recjHeight, recjTop;
         List<Rectangle> recs = new List<Rectangle>();
 
         DoubleAnimation animAppearOpacity;
@@ -65,6 +77,7 @@ namespace DiplomPonomarev
             graphicsComponent.storybSwap = new Storyboard();
 
             graphicsComponent.storybTransform.Completed += storybTransform_Completed;
+            graphicsComponent.storybSwap.Completed += storybSwap_Completed;
 
             animAppearOpacity = new DoubleAnimation();
             animAppearOpacity.From = 0.0;
@@ -79,24 +92,24 @@ namespace DiplomPonomarev
             Storyboard.SetTargetProperty(animRefreshColor, new PropertyPath("Fill.Color"));
 
             animTransformHeight = new DoubleAnimation();
-            animTransformHeight.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+            animTransformHeight.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt));
             Storyboard.SetTargetProperty(animTransformHeight, new PropertyPath(Rectangle.HeightProperty));
 
             animTransformRadiusX = new DoubleAnimation();
-            animTransformRadiusX.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+            animTransformRadiusX.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt));
             Storyboard.SetTargetProperty(animTransformRadiusX, new PropertyPath(Rectangle.RadiusXProperty));
 
             animTransformRadiusY = new DoubleAnimation();
-            animTransformRadiusY.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+            animTransformRadiusY.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt));
             Storyboard.SetTargetProperty(animTransformRadiusY, new PropertyPath(Rectangle.RadiusYProperty));
 
             animTransformTop = new DoubleAnimation();
             Storyboard.SetTargetProperty(animTransformTop, new PropertyPath(Canvas.TopProperty));
-            animTransformTop.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+            animTransformTop.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt));
 
             animSwapLeft = new DoubleAnimation();
             Storyboard.SetTargetProperty(animSwapLeft, new PropertyPath(Canvas.LeftProperty));
-            animSwapLeft.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+            animSwapLeft.Duration = new Duration(TimeSpan.FromMilliseconds(animMSSwap));
 
             graphicsComponent.storybAppear.Children.Add(animAppearOpacity);
             graphicsComponent.storybRefresh.Children.Add(animRefreshColor);
@@ -112,11 +125,6 @@ namespace DiplomPonomarev
             {
                 addRecsCount = removeRecsCount = recsPerAction = recs.Count / 8;
             });
-        }
-
-        void storybTransform_Completed(object sender, EventArgs e)
-        {
-            recsTransforming--;
         }
 
         void canvas_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -172,7 +180,7 @@ namespace DiplomPonomarev
         {
             Rectangle r = new Rectangle();
             r.Width = width; r.Height = height; r.Fill = Brushes.Black;
-            r.RadiusX = 2; r.RadiusY = 2; r.Opacity = 0.0;
+            r.RadiusX = recRadius; r.RadiusY = recRadius; r.Opacity = 0.0;
             Canvas.SetLeft(r, x);
             Canvas.SetTop(r, y);
             canvas.Children.Add(r);
@@ -266,6 +274,24 @@ namespace DiplomPonomarev
             });
         }
 
+        public void UnlockRecs()
+        {
+            for (int i = 0; i < recs.Count; i++)
+            {
+                double height = recs[i].Height, width = recs[i].Width, x = Canvas.GetLeft(recs[i]);
+
+                Rectangle r = new Rectangle();
+                r.Width = width; r.Height = height; r.Fill = Brushes.Black;
+                r.RadiusX = recRadius; r.RadiusY = recRadius;
+                Canvas.SetLeft(r, x);
+                Canvas.SetTop(r, maxRecHeight - r.Height + offsetTop);
+                canvas.Children.Remove(recs[i]);
+                canvas.Children.Add(r);
+
+                recs[i] = r;
+            }
+        }
+
         public Task RefreshRecsAsync()
         {
             int refreshedCount = 0;
@@ -280,8 +306,18 @@ namespace DiplomPonomarev
                     {
                         try
                         {
-                            recs[i].Height = rnd.Next(minRecHeight, maxRecHeight);
-                            Canvas.SetTop(recs[i], maxRecHeight - recs[i].Height + offsetTop);
+                            int height = rnd.Next(minRecHeight, maxRecHeight);
+                            double width = recs[i].Width, x = Canvas.GetLeft(recs[i]);
+
+                            Rectangle r = new Rectangle();
+                            r.Width = width; r.Height = height; r.Fill = Brushes.Black;
+                            r.RadiusX = recRadius; r.RadiusY = recRadius;
+                            Canvas.SetLeft(r, x);
+                            Canvas.SetTop(r, maxRecHeight - r.Height + offsetTop);
+                            canvas.Children.Remove(recs[i]);
+                            canvas.Children.Add(r);
+
+                            recs[i] = r;
                             Storyboard.SetTarget(animRefreshColor, recs[i]);
                             graphicsComponent.storybRefresh.Begin(graphicsComponent);
                             refreshedCount++;
@@ -305,45 +341,64 @@ namespace DiplomPonomarev
             {
                 if (recs.Count < 1) return;
                 sorting = true;
-                long delay = 30000000 / (recs.Count * (recs.Count - 1));
+                long delay = 300000000 / (recs.Count * (recs.Count - 1));
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                Rectangle prevRecj = null, prevReci = null;
+                Rectangle recjPrev = null, reciPrev = null;
                 for (int i = 0; i < recs.Count - 1; i++)
                 {
-                    SafeInvoke(() =>
-                    {
-                        if (prevReci != null) prevReci.Fill = Brushes.Black;
-                        recs[i].Fill = Brushes.Blue;
-                    });
                     for (int j = i + 1; j < recs.Count; j++)
                     {
                         SafeInvoke(() =>
                         {
                             try
                             {
-                                if (prevRecj != null) prevRecj.Fill = Brushes.Black;
+                                if (reciPrev != null) reciPrev.Fill = Brushes.Black;
+                                recs[i].Fill = Brushes.Blue;
+                                if (recjPrev != null) recjPrev.Fill = Brushes.Black;
                                 recs[j].Fill = Brushes.Red;
                                 if (recs[j].Height < recs[i].Height)
                                 {
-                                    double temp = Canvas.GetLeft(recs[i]);
-                                    Canvas.SetLeft(recs[i], Canvas.GetLeft(recs[j]));
-                                    Canvas.SetLeft(recs[j], temp);
                                     Rectangle r = recs[i];
                                     recs[i] = recs[j];
                                     recs[j] = r;
-                                    recs[i].Fill = Brushes.Blue;
-                                    TransformRec(recs[i]);
-                                    TransformRec(recs[j]);
+                                    reci = recs[i];
+                                    recj = recs[j];
+                                    reciHeight = reci.Height;
+                                    reciTop = Canvas.GetTop(reci);
+                                    recjHeight = recj.Height;
+                                    recjTop = Canvas.GetTop(recj);
+
+                                    Canvas.SetZIndex(recs[i], 9999);
+                                    Canvas.SetZIndex(recs[j], 9998);
+                                    if (!animateCircles)
+                                    {
+                                        animateCirclesStart = false;
+                                        SwapRecs(recs[i], recs[j]);
+                                    }
+                                    else
+                                    {
+                                        animateCirclesStart = true;
+                                        transformingDown = true;
+                                        TransformRecDown(recs[i]);
+                                        TransformRecDown(recs[j]);
+                                    }
+                                    fullSwapEnd = false;
                                 }
-                                prevRecj = recs[j];
+                                reciPrev = recs[i];
+                                recjPrev = recs[j];
                             }
                             catch { }
                         });
-                        while (sw.ElapsedTicks < delay || recsTransforming > 0) { }
-                        sw.Restart();
+                        if (fullSwapEnd) sw.Restart();
+                        while (sw.ElapsedTicks < delay * animSpeed || !fullSwapEnd) { }
+                        SafeInvoke(() =>
+                        {
+                            Canvas.SetZIndex(recs[i], 0);
+                            Canvas.SetZIndex(recs[j], 1);
+                            sw.Restart();
+                        });
                     }
-                    prevReci = recs[i];
                 }
                 sw.Reset();
 
@@ -361,17 +416,72 @@ namespace DiplomPonomarev
                     while (sw.ElapsedTicks < (2 - i) * 2000000 / recs.Count) { }
                 }
                 sw.Reset();
-                sorting = false;
+                SafeInvoke(() =>
+                {
+                    UnlockRecs();
+                    sorting = false;
+                });
             });
         }
 
-        public void TransformRec(Rectangle r)
+        void storybSwap_Completed(object sender, EventArgs e)
+        {
+            recsSwaping--;
+            if (recsSwaping == 0)
+            {
+                if (animateCircles || animateCirclesStart)
+                {
+                    transformingDown = false;
+                    TransformRecUp(reci, reciHeight, reciTop);
+                    TransformRecUp(recj, recjHeight, recjTop);
+                }
+                else fullSwapEnd = true;
+            }
+        }
+
+        void storybTransform_Completed(object sender, EventArgs e)
+        {
+            recsTransforming--;
+            if (recsTransforming == 0)
+            {
+                if (transformingDown) SwapRecs(reci, recj);
+                else fullSwapEnd = true;
+            }
+        }
+
+        public void SwapRecs(Rectangle r1, Rectangle r2)
+        {
+            recsSwaping += 2;
+            double r1Left = Canvas.GetLeft(r1), r2Left = Canvas.GetLeft(r2);
+            animSwapLeft.To = r2Left;
+            Storyboard.SetTarget(animSwapLeft, r1);
+            graphicsComponent.storybSwap.Begin(graphicsComponent);
+            animSwapLeft.To = r1Left;
+            Storyboard.SetTarget(animSwapLeft, r2);
+            graphicsComponent.storybSwap.Begin(graphicsComponent);
+        }
+
+        public void TransformRecDown(Rectangle r)
         {
             recsTransforming++;
             animTransformHeight.To = r.Width;
             animTransformRadiusX.To = r.Width / 2;
             animTransformRadiusY.To = r.Width / 2;
             animTransformTop.To = Canvas.GetTop(r) + r.Height + 5;
+            Storyboard.SetTarget(animTransformHeight, r);
+            Storyboard.SetTarget(animTransformRadiusX, r);
+            Storyboard.SetTarget(animTransformRadiusY, r);
+            Storyboard.SetTarget(animTransformTop, r);
+            graphicsComponent.storybTransform.Begin(graphicsComponent);
+        }
+
+        public void TransformRecUp(Rectangle r, double height, double top)
+        {
+            recsTransforming++;
+            animTransformHeight.To = height;
+            animTransformRadiusX.To = recRadius;
+            animTransformRadiusY.To = recRadius;
+            animTransformTop.To = top;
             Storyboard.SetTarget(animTransformHeight, r);
             Storyboard.SetTarget(animTransformRadiusX, r);
             Storyboard.SetTarget(animTransformRadiusY, r);
@@ -401,7 +511,30 @@ namespace DiplomPonomarev
 
         private void toolStripButton2_Click_1(object sender, EventArgs e)
         {
-            TransformRec(recs[0]);
+            if (1 / animSpeed == animSpeedMin) return;
+            animSpeed += 0.1;
+            if (1 / animSpeed < animSpeedMin) animSpeed = 1 / animSpeedMin;
+            SetAnimSpeed();
+        }
+
+        private void toolStripButton3_Click_1(object sender, EventArgs e)
+        {
+            if (1 / animSpeed == animSpeedMax) return;
+            animSpeed -= 0.1;
+            if (1 / animSpeed > animSpeedMax) animSpeed = 1 / animSpeedMax;
+            SetAnimSpeed();
+        }
+
+        public void SetAnimSpeed()
+        {
+            animTransformHeight.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt * animSpeed));
+            animTransformRadiusX.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt * animSpeed));
+            animTransformRadiusY.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt * animSpeed));
+            animTransformTop.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt * animSpeed));
+            animSwapLeft.Duration = new Duration(TimeSpan.FromMilliseconds(animMSSwap * animSpeed));
+            double animSpeedInverse = Math.Round(1 / animSpeed, 2);
+            lblSpeed.Text = animSpeedInverse + "x";
+            animateCircles = !(animSpeedInverse > 2);
         }
     }
 }
