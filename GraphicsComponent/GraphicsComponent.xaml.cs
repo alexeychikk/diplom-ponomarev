@@ -22,6 +22,7 @@ namespace GraphicsComponent
         public Storyboard storybRefresh;
         public Storyboard storybTransform;
         public Storyboard storybSwap;
+        public Storyboard storybRemove;
 
         public GraphicsComponent()
         {

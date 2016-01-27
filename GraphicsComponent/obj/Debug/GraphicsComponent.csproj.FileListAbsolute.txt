@@ -6,4 +6,3 @@ C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\Graphic
 C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\bin\Debug\GraphicsComponent.pdb
 C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent.dll
 C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent.pdb
-C:\Users\alexz_000\documents\visual studio 2012\Projects\DiplomPonomarev\GraphicsComponent\obj\Debug\GraphicsComponent.csprojResolveAssemblyReference.cache

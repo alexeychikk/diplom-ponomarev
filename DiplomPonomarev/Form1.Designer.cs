@@ -55,13 +55,13 @@ namespace DiplomPonomarev
             this.cmbSortType = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
-            this.pnlDevice = new System.Windows.Forms.Panel();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.graphicsComponent = new GraphicsComponent.GraphicsComponent();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.lblSpeed = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.pnlDevice = new System.Windows.Forms.Panel();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.graphicsComponent = new GraphicsComponent.GraphicsComponent();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlDevice.SuspendLayout();
@@ -76,7 +76,7 @@ namespace DiplomPonomarev
             this.анімаціяToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(828, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(834, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -128,7 +128,7 @@ namespace DiplomPonomarev
             this.toolStripButton3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(828, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(834, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -259,34 +259,6 @@ namespace DiplomPonomarev
             this.toolStripLabel3.Size = new System.Drawing.Size(66, 22);
             this.toolStripLabel3.Text = "Швидкість:";
             // 
-            // pnlDevice
-            // 
-            this.pnlDevice.Controls.Add(this.statusStrip1);
-            this.pnlDevice.Controls.Add(this.elementHost1);
-            this.pnlDevice.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlDevice.Location = new System.Drawing.Point(0, 49);
-            this.pnlDevice.Name = "pnlDevice";
-            this.pnlDevice.Size = new System.Drawing.Size(828, 409);
-            this.pnlDevice.TabIndex = 2;
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 387);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(828, 22);
-            this.statusStrip1.TabIndex = 1;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // elementHost1
-            // 
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.elementHost1.Location = new System.Drawing.Point(0, 0);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(828, 409);
-            this.elementHost1.TabIndex = 0;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = this.graphicsComponent;
-            // 
             // toolStripButton2
             // 
             this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -314,25 +286,57 @@ namespace DiplomPonomarev
             this.toolStripButton3.Text = "toolStripButton3";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click_1);
             // 
+            // pnlDevice
+            // 
+            this.pnlDevice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlDevice.Controls.Add(this.elementHost1);
+            this.pnlDevice.Location = new System.Drawing.Point(0, 49);
+            this.pnlDevice.Name = "pnlDevice";
+            this.pnlDevice.Size = new System.Drawing.Size(834, 387);
+            this.pnlDevice.TabIndex = 2;
+            // 
+            // elementHost1
+            // 
+            this.elementHost1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.elementHost1.Location = new System.Drawing.Point(3, 3);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(828, 381);
+            this.elementHost1.TabIndex = 0;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.graphicsComponent;
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Location = new System.Drawing.Point(0, 439);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(834, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(828, 458);
+            this.ClientSize = new System.Drawing.Size(834, 461);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.pnlDevice);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(600, 400);
+            this.MinimumSize = new System.Drawing.Size(850, 500);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Візуалізація структур даних";
+            this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.pnlDevice.ResumeLayout(false);
-            this.pnlDevice.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -363,12 +367,12 @@ namespace DiplomPonomarev
         private System.Windows.Forms.ToolStripMenuItem сортуванняToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem анімаціяToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripLabel toolStripLabel3;
         private ToolStripButton toolStripButton2;
         private ToolStripLabel lblSpeed;
         private ToolStripButton toolStripButton3;
+        private StatusStrip statusStrip1;
 
     }
 }
