@@ -226,7 +226,11 @@ namespace DiplomPonomarev
             }
             for (int i = 0; i < recs.Count; i++)
             {
-                Canvas.SetLeft(recs[i].rec, i * (recWidth + offsetBetween) + offsetSides);
+                UnlockRec(recs[i]);
+                double x = i * (recWidth + offsetBetween) + offsetSides;
+                Canvas.SetLeft(recs[i].rec, x);
+                Canvas.SetLeft(recs[i].tbNum, x + recWidth / 2 - recs[i].tbNum.ActualWidth / 2);
+                Canvas.SetLeft(recs[i].tbIndex, x + recWidth / 2 - recs[i].tbIndex.ActualWidth / 2);
                 recs[i].rec.Width = recWidth;
             }
             recsPerAction = startRecsCount / 8;
@@ -320,6 +324,18 @@ namespace DiplomPonomarev
                 graphicsComponent.storybAppear.Begin(graphicsComponent);
                 Storyboard.SetTarget(animAppearOpacity, tbIndex);
                 graphicsComponent.storybAppear.Begin(graphicsComponent);
+            }
+            else if (!CanPushTail())
+            {
+                for (int i = 0; i < recs.Count; i++)
+                {
+                    recs[i].index++;
+                    recs[i].tbIndex.Text = recs[i].index.ToString();
+                    double xn = (i + 1.0) * (recWidth + offsetBetween) + offsetSides;
+                    Canvas.SetLeft(recs[i].rec, xn);
+                    Canvas.SetLeft(recs[i].tbNum, xn + recWidth / 2 - recs[i].tbNum.ActualWidth / 2);
+                    Canvas.SetLeft(recs[i].tbIndex, xn + recWidth / 2 - recs[i].tbIndex.ActualWidth / 2);
+                }
             }
             if (CanPushTail())
                 recs.Add(new VisualRec(r, tbNum, tbIndex, num, index));
@@ -800,18 +816,24 @@ namespace DiplomPonomarev
             animateCircles = !(animSpeedInverse > 2);
         }
 
+        int hostWidthPrev = 0, hostHeightPrev = 0;
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
             if (sorting || elementHost1.Height < 300) return;
-            for (int i = 0; i < recs.Count; i++)
+            if (elementHost1.Height != hostHeightPrev)
             {
-                double height = recs[i].num * (elementHost1.Height - (offsetBottom + offsetTop)) / 100.0;
-                double y = elementHost1.Height - height - offsetBottom;
-                recs[i].rec.Height = height;
-                Canvas.SetTop(recs[i].rec, y);
-                Canvas.SetTop(recs[i].tbNum, y + height - recs[i].tbNum.ActualHeight - offsetNum);
-                Canvas.SetTop(recs[i].tbIndex, y + height + offsetIndex);
+                for (int i = 0; i < recs.Count; i++)
+                {
+                    double height = recs[i].num * (elementHost1.Height - (offsetBottom + offsetTop)) / 100.0;
+                    double y = elementHost1.Height - height - offsetBottom;
+                    recs[i].rec.Height = height;
+                    Canvas.SetTop(recs[i].rec, y);
+                    Canvas.SetTop(recs[i].tbNum, y + height - recs[i].tbNum.ActualHeight - offsetNum);
+                    Canvas.SetTop(recs[i].tbIndex, y + height + offsetIndex);
+                }
             }
+            hostHeightPrev = elementHost1.Height;
+            hostWidthPrev = elementHost1.Width;
         }
     }
 }
