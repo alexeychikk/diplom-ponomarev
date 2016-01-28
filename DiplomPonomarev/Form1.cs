@@ -13,6 +13,7 @@ using System.Windows.Media.Animation;
 using System.Windows;
 using System.Diagnostics;
 using System.Threading;
+using System.Windows.Documents;
 
 namespace DiplomPonomarev
 {
@@ -21,7 +22,7 @@ namespace DiplomPonomarev
         Canvas canvas;
         Random rnd = new Random();
         public double recWidth = 40;
-        public double minRecWidth = 2;
+        public double minRecWidth = 20;
         public double maxRecWidth = 40;
         public double scaling = 0.2;
         public int minRecHeight = 7;
@@ -30,6 +31,9 @@ namespace DiplomPonomarev
         public double offsetBottom = 60;
         public double offsetSides = 40;
         public double offsetBetween = 4;
+        public double offsetNum = 4;
+        public double offsetIndex = 2;
+        public double offsetCircle = 15;
         public double recRadius = 2;
         public double animSpeed = 1;
         public double animSpeedMin = 0.3;
@@ -60,22 +64,32 @@ namespace DiplomPonomarev
         DoubleAnimation animTransformRadiusY;
         DoubleAnimation animTransformTop;
         DoubleAnimation animSwapLeft;
+        DoubleAnimation animMoveLeft;
 
         public class VisualRec
         {
             public Rectangle rec;
             public TextBlock tbNum;
             public TextBlock tbIndex;
-            public int num;
+            public int num, index;
 
-            public VisualRec(Rectangle rec, TextBlock tbNum, TextBlock tbIndex, int num) 
+            public VisualRec(Rectangle rec, TextBlock tbNum, TextBlock tbIndex, int num, int index) 
             { 
                 this.rec = rec;
                 this.tbNum = tbNum;
                 this.tbIndex = tbIndex;
                 this.num = num;
+                this.index = index;
             }
         }
+
+        public enum StructType { List, Queue, Stack };
+        public enum SortType { Bubble, Insertion, Quick };
+
+        public StructType structType = StructType.List;
+        public SortType sortType = SortType.Bubble;
+
+        public bool pushTail = false;
 
         public Form1()
         {
@@ -107,6 +121,7 @@ namespace DiplomPonomarev
             graphicsComponent.storybTransform = new Storyboard();
             graphicsComponent.storybSwap = new Storyboard();
             graphicsComponent.storybRemove = new Storyboard();
+            graphicsComponent.storybMove = new Storyboard();
 
             graphicsComponent.storybTransform.Completed += storybTransform_Completed;
             graphicsComponent.storybSwap.Completed += storybSwap_Completed;
@@ -115,47 +130,51 @@ namespace DiplomPonomarev
             animAppearOpacity = new DoubleAnimation();
             animAppearOpacity.From = 0.0;
             animAppearOpacity.To = 1.0;
-            animAppearOpacity.Duration = new Duration(TimeSpan.FromMilliseconds(800));
+            animAppearOpacity.Duration = TimeSpan.FromMilliseconds(600);
             Storyboard.SetTargetProperty(animAppearOpacity, new PropertyPath(Rectangle.OpacityProperty));
 
             animRefreshColor = new ColorAnimation();
             animRefreshColor.From = Colors.Yellow;
             animRefreshColor.To = Colors.Black;
-            animRefreshColor.Duration = new Duration(TimeSpan.FromMilliseconds(350));
+            animRefreshColor.Duration = TimeSpan.FromMilliseconds(350);
             Storyboard.SetTargetProperty(animRefreshColor, new PropertyPath("Fill.Color"));
 
             animRemoveOpacity = new DoubleAnimation();
             animRemoveOpacity.From = 1.0;
             animRemoveOpacity.To = 0.0;
-            animRemoveOpacity.Duration = new Duration(TimeSpan.FromMilliseconds(600));
+            animRemoveOpacity.Duration = TimeSpan.FromMilliseconds(600);
             animRemoveOpacity.BeginTime = TimeSpan.FromMilliseconds(300);
             Storyboard.SetTargetProperty(animRemoveOpacity, new PropertyPath(Rectangle.OpacityProperty));
 
             animRemoveColor = new ColorAnimation();
             animRemoveColor.From = Colors.Black;
             animRemoveColor.To = Colors.Red;
-            animRemoveColor.Duration = new Duration(TimeSpan.FromMilliseconds(300));
+            animRemoveColor.Duration = TimeSpan.FromMilliseconds(300);
             Storyboard.SetTargetProperty(animRemoveColor, new PropertyPath("Fill.Color"));
 
             animTransformHeight = new DoubleAnimation();
-            animTransformHeight.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt));
+            animTransformHeight.Duration = TimeSpan.FromMilliseconds(animMSDefualt);
             Storyboard.SetTargetProperty(animTransformHeight, new PropertyPath(Rectangle.HeightProperty));
 
             animTransformRadiusX = new DoubleAnimation();
-            animTransformRadiusX.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt));
+            animTransformRadiusX.Duration = TimeSpan.FromMilliseconds(animMSDefualt);
             Storyboard.SetTargetProperty(animTransformRadiusX, new PropertyPath(Rectangle.RadiusXProperty));
 
             animTransformRadiusY = new DoubleAnimation();
-            animTransformRadiusY.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt));
+            animTransformRadiusY.Duration = TimeSpan.FromMilliseconds(animMSDefualt);
             Storyboard.SetTargetProperty(animTransformRadiusY, new PropertyPath(Rectangle.RadiusYProperty));
 
             animTransformTop = new DoubleAnimation();
             Storyboard.SetTargetProperty(animTransformTop, new PropertyPath(Canvas.TopProperty));
-            animTransformTop.Duration = new Duration(TimeSpan.FromMilliseconds(animMSDefualt));
+            animTransformTop.Duration = TimeSpan.FromMilliseconds(animMSDefualt);
 
             animSwapLeft = new DoubleAnimation();
             Storyboard.SetTargetProperty(animSwapLeft, new PropertyPath(Canvas.LeftProperty));
-            animSwapLeft.Duration = new Duration(TimeSpan.FromMilliseconds(animMSSwap));
+            animSwapLeft.Duration = TimeSpan.FromMilliseconds(animMSSwap);
+
+            animMoveLeft = new DoubleAnimation();
+            Storyboard.SetTargetProperty(animMoveLeft, new PropertyPath(Canvas.LeftProperty));
+            animMoveLeft.Duration = TimeSpan.FromMilliseconds(400);
 
             graphicsComponent.storybAppear.Children.Add(animAppearOpacity);
             graphicsComponent.storybRefresh.Children.Add(animRefreshColor);
@@ -166,6 +185,7 @@ namespace DiplomPonomarev
             graphicsComponent.storybSwap.Children.Add(animSwapLeft);
             graphicsComponent.storybRemove.Children.Add(animRemoveColor);
             graphicsComponent.storybRemove.Children.Add(animRemoveOpacity);
+            graphicsComponent.storybMove.Children.Add(animMoveLeft);
         }
 
         void canvas_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -217,23 +237,32 @@ namespace DiplomPonomarev
             startRecsCount = (int)((elementHost1.Width - offsetSides * 2) / (recWidth + offsetBetween));
         }
 
-        public void AddRec(double width, double height, double x, double y, int index, int num, bool anim = true)
+        public void AddRec(bool anim = true, int num = -1)
         {
+            if (num == -1) num = rnd.Next(minRecHeight, maxRecHeight);
+            double height = num * (elementHost1.Height - (offsetBottom + offsetTop)) / 100.0;
+            int index = 0; double x = offsetSides, y = elementHost1.Height - height - offsetBottom;
+            if (CanPushTail())
+            {
+                index = recs.Count;
+                x = recs.Count * (recWidth + offsetBetween) + offsetSides;
+            }
+
             Rectangle r = new Rectangle();
-            r.Width = width; r.Height = height; r.Fill = Brushes.Black;
+            r.Width = recWidth; r.Height = height; r.Fill = Brushes.Black;
             r.RadiusX = recRadius; r.RadiusY = recRadius;
 
             TextBlock tbNum = new TextBlock();
             tbNum.Foreground = Brushes.White;
             tbNum.Width = Double.NaN;
             tbNum.Height = Double.NaN;
-            tbNum.Text = num + "";
+            tbNum.Text = num.ToString();
 
             TextBlock tbIndex = new TextBlock();
             tbIndex.Foreground = Brushes.Gray;
             tbIndex.Width = Double.NaN;
             tbIndex.Height = Double.NaN;
-            tbIndex.Text = index + "";
+            tbIndex.Text = index.ToString();
 
             if (anim)
             {
@@ -249,17 +278,42 @@ namespace DiplomPonomarev
             canvas.Children.Add(tbNum);
             tbNum.Measure(new Size());
             tbNum.Arrange(new Rect());
-            Canvas.SetLeft(tbNum, x + width / 2 - tbNum.ActualWidth / 2);
-            Canvas.SetTop(tbNum, y + height - tbNum.ActualHeight - 4);
+            Canvas.SetLeft(tbNum, x + recWidth / 2 - tbNum.ActualWidth / 2);
+            Canvas.SetTop(tbNum, y + height - tbNum.ActualHeight - offsetNum);
 
             canvas.Children.Add(tbIndex);
             tbIndex.Measure(new Size());
             tbIndex.Arrange(new Rect());
-            Canvas.SetLeft(tbIndex, x + width / 2 - tbIndex.ActualWidth / 2);
-            Canvas.SetTop(tbIndex, y + height + 2);
+            Canvas.SetLeft(tbIndex, x + recWidth / 2 - tbIndex.ActualWidth / 2);
+            Canvas.SetTop(tbIndex, y + height + offsetIndex);
 
             if (anim)
             {
+                if (!CanPushTail())
+                {
+                    animAppearOpacity.Duration = TimeSpan.FromMilliseconds(1000);
+                    animAppearOpacity.BeginTime = TimeSpan.FromMilliseconds(400);
+                    for (int i = 0; i < recs.Count; i++)
+                    {
+                        recs[i].index++;
+                        recs[i].tbIndex.Text = recs[i].index.ToString();
+                        double xn = (i + 1.0) * (recWidth + offsetBetween) + offsetSides;
+                        animMoveLeft.To = xn;
+                        Storyboard.SetTarget(animMoveLeft, recs[i].rec);
+                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        animMoveLeft.To = xn + recWidth / 2.0 - recs[i].tbNum.ActualWidth / 2.0;
+                        Storyboard.SetTarget(animMoveLeft, recs[i].tbNum);
+                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        animMoveLeft.To = xn + recWidth / 2.0 - recs[i].tbIndex.ActualWidth / 2.0;
+                        Storyboard.SetTarget(animMoveLeft, recs[i].tbIndex);
+                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                    }
+                }
+                else
+                {
+                    animAppearOpacity.Duration = TimeSpan.FromMilliseconds(600);
+                    animAppearOpacity.BeginTime = TimeSpan.FromMilliseconds(0);
+                }
                 Storyboard.SetTarget(animAppearOpacity, r);
                 graphicsComponent.storybAppear.Begin(graphicsComponent);
                 Storyboard.SetTarget(animAppearOpacity, tbNum);
@@ -267,7 +321,14 @@ namespace DiplomPonomarev
                 Storyboard.SetTarget(animAppearOpacity, tbIndex);
                 graphicsComponent.storybAppear.Begin(graphicsComponent);
             }
-            recs.Add(new VisualRec(r, tbNum, tbIndex, num));
+            if (CanPushTail())
+                recs.Add(new VisualRec(r, tbNum, tbIndex, num, index));
+            else recs.Insert(0, new VisualRec(r, tbNum, tbIndex, num, index));
+        }
+
+        public bool CanPushTail()
+        {
+            return structType == StructType.Stack || structType == StructType.Queue || (structType == StructType.List && pushTail);
         }
 
         public bool EnoughSpace()
@@ -280,10 +341,7 @@ namespace DiplomPonomarev
             for (int i = 0; i < addRecsCount; i++)
             {
                 if (!EnoughSpace()) return;
-                int num = rnd.Next(minRecHeight, maxRecHeight);
-                double height = num * (elementHost1.Height - (offsetBottom + offsetTop)) / 100.0;
-                AddRec(recWidth, height, recs.Count * (recWidth + offsetBetween) + offsetSides,
-                    elementHost1.Height - height - offsetBottom, recs.Count, num);
+                AddRec(false);
             }
             addRecsCount = recsPerAction;
         }
@@ -303,10 +361,7 @@ namespace DiplomPonomarev
                         try
                         {
                             if (!EnoughSpace()) { enoughSpace = false; return; }
-                            int num = rnd.Next(minRecHeight, maxRecHeight);
-                            double height = num * (elementHost1.Height - (offsetBottom + offsetTop)) / 100.0;
-                            AddRec(recWidth, height, recs.Count * (recWidth + offsetBetween) + offsetSides,
-                                elementHost1.Height - height - offsetBottom, recs.Count, num);
+                            AddRec();
                         }
                         catch (Exception e) { }
                     });
@@ -388,21 +443,54 @@ namespace DiplomPonomarev
             });
         }
 
+        public void UnlockRec(VisualRec vr)
+        {
+            double height = vr.rec.Height, width = vr.rec.Width, x = Canvas.GetLeft(vr.rec), y = Canvas.GetTop(vr.rec);
+
+            Rectangle r = new Rectangle();
+            r.Width = width; r.Height = height; r.Fill = Brushes.Black;
+            r.RadiusX = recRadius; r.RadiusY = recRadius;
+            Canvas.SetLeft(r, x);
+            Canvas.SetTop(r, y);
+            canvas.Children.Remove(vr.rec);
+            canvas.Children.Add(r);
+
+            TextBlock tbNum = new TextBlock();
+            tbNum.Foreground = Brushes.White;
+            tbNum.Width = Double.NaN;
+            tbNum.Height = Double.NaN;
+            tbNum.Text = vr.tbNum.Text;
+
+            TextBlock tbIndex = new TextBlock();
+            tbIndex.Foreground = Brushes.Gray;
+            tbIndex.Width = Double.NaN;
+            tbIndex.Height = Double.NaN;
+            tbIndex.Text = vr.tbIndex.Text;
+
+            canvas.Children.Remove(vr.tbNum);
+            canvas.Children.Add(tbNum);
+            tbNum.Measure(new Size());
+            tbNum.Arrange(new Rect());
+            Canvas.SetLeft(tbNum, x + width / 2 - tbNum.ActualWidth / 2);
+            Canvas.SetTop(tbNum, y + height - tbNum.ActualHeight - offsetNum);
+
+            canvas.Children.Remove(vr.tbIndex);
+            canvas.Children.Add(tbIndex);
+            tbIndex.Measure(new Size());
+            tbIndex.Arrange(new Rect());
+            Canvas.SetLeft(tbIndex, x + width / 2 - tbIndex.ActualWidth / 2);
+            Canvas.SetTop(tbIndex, y + height + offsetIndex);
+
+            vr.rec = r;
+            vr.tbNum = tbNum;
+            vr.tbIndex = tbIndex;
+        }
+
         public void UnlockRecs()
         {
             for (int i = 0; i < recs.Count; i++)
             {
-                double height = recs[i].rec.Height, width = recs[i].rec.Width, x = Canvas.GetLeft(recs[i].rec);
-
-                Rectangle r = new Rectangle();
-                r.Width = width; r.Height = height; r.Fill = Brushes.Black;
-                r.RadiusX = recRadius; r.RadiusY = recRadius;
-                Canvas.SetLeft(r, x);
-                Canvas.SetTop(r, elementHost1.Height - height - offsetBottom);
-                canvas.Children.Remove(recs[i].rec);
-                canvas.Children.Add(r);
-
-                recs[i].rec = r;
+                UnlockRec(recs[i]);
             }
         }
 
@@ -436,13 +524,13 @@ namespace DiplomPonomarev
                             tbNum.Foreground = Brushes.White;
                             tbNum.Width = Double.NaN;
                             tbNum.Height = Double.NaN;
-                            tbNum.Text = num + "";
+                            tbNum.Text = num.ToString();
                             canvas.Children.Remove(recs[i].tbNum);
                             canvas.Children.Add(tbNum);
                             tbNum.Measure(new Size());
                             tbNum.Arrange(new Rect());
                             Canvas.SetLeft(tbNum, x + width / 2 - tbNum.ActualWidth / 2);
-                            Canvas.SetTop(tbNum, y + height - tbNum.ActualHeight - 4);
+                            Canvas.SetTop(tbNum, y + height - tbNum.ActualHeight - offsetNum);
 
                             recs[i].rec = r;
                             recs[i].tbNum = tbNum;
@@ -463,10 +551,8 @@ namespace DiplomPonomarev
             graphicsComponent.Dispatcher.Invoke(a, System.Windows.Threading.DispatcherPriority.Background);
         }
 
-        public Task VisualSortBubble()
+        public Task VisualSortBubble(bool asc = true)
         {
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
             return Task.Run(() =>
             {
                 if (recs.Count < 1) return;
@@ -478,63 +564,82 @@ namespace DiplomPonomarev
                     {
                         SafeInvoke(() =>
                         {
-                            try
+                            if (reciPrev != null)
                             {
-                                if (reciPrev != null) reciPrev.rec.Fill = Brushes.Black;
-                                recs[i].rec.Fill = Brushes.Blue;
-                                if (recjPrev != null) recjPrev.rec.Fill = Brushes.Black;
-                                recs[j].rec.Fill = Brushes.Red;
+                                reciPrev.rec.Fill = Brushes.Black;
+                                reciPrev.tbIndex.Inlines.Clear();
+                                reciPrev.tbIndex.Text = reciPrev.index.ToString();
                             }
-                            catch { }
+                            recs[i].rec.Fill = Brushes.Blue;
+                            Run runi = new Run(recs[i].tbIndex.Text);
+                            runi.Foreground = Brushes.Blue;
+                            recs[i].tbIndex.Text = "";
+                            recs[i].tbIndex.Inlines.Add(new Bold(runi));
+
+                            if (recjPrev != null)
+                            {
+                                recjPrev.rec.Fill = Brushes.Black;
+                                recjPrev.tbIndex.Inlines.Clear();
+                                recjPrev.tbIndex.Text = recjPrev.index.ToString();
+                            }
+                            recs[j].rec.Fill = Brushes.Red;
+                            Run runj = new Run(recs[j].tbIndex.Text);
+                            runj.Foreground = Brushes.Red;
+                            recs[j].tbIndex.Text = "";
+                            recs[j].tbIndex.Inlines.Add(new Bold(runj));
                         });
                         Thread.Sleep((int)(animMSDefualt * animSpeed));
-                        SafeInvoke(() =>
+                       
+                        if ((asc && recs[j].num < recs[i].num) || (!asc && recs[j].num > recs[i].num))
                         {
-                            try
+                            fullSwapEnd = false;
+                            SafeInvoke(() =>
                             {
-                                if (recs[j].num < recs[i].num)
+                                VisualRec r = recs[i];
+                                recs[i] = recs[j];
+                                recs[j] = r;
+
+                                TextBlock tb = recs[i].tbIndex;
+                                recs[i].tbIndex = recs[j].tbIndex;
+                                recs[j].tbIndex = tb;
+
+                                int ind = recs[i].index;
+                                recs[i].index = recs[j].index;
+                                recs[j].index = ind;
+
+                                reci = recs[i];
+                                recj = recs[j];
+                                reciHeight = reci.rec.Height;
+                                reciTop = Canvas.GetTop(reci.rec);
+                                recjHeight = recj.rec.Height;
+                                recjTop = Canvas.GetTop(recj.rec);
+
+                                Canvas.SetZIndex(recs[i].rec, 9996);
+                                Canvas.SetZIndex(recs[j].rec, 9997);
+                                Canvas.SetZIndex(recs[i].tbNum, 9998);
+                                Canvas.SetZIndex(recs[j].tbNum, 9999);
+                                if (!animateCircles)
                                 {
-                                    VisualRec r = recs[i];
-                                    recs[i] = recs[j];
-                                    recs[j] = r;
-
-                                    TextBlock tb = recs[i].tbIndex;
-                                    recs[i].tbIndex = recs[j].tbIndex;
-                                    recs[j].tbIndex = tb;
-
-                                    reci = recs[i];
-                                    recj = recs[j];
-                                    reciHeight = reci.rec.Height;
-                                    reciTop = Canvas.GetTop(reci.rec);
-                                    recjHeight = recj.rec.Height;
-                                    recjTop = Canvas.GetTop(recj.rec);
-
-                                    Canvas.SetZIndex(recs[i].rec, 9996);
-                                    Canvas.SetZIndex(recs[j].rec, 9997);
-                                    Canvas.SetZIndex(recs[i].tbNum, 9998);
-                                    Canvas.SetZIndex(recs[j].tbNum, 9999);
-                                    if (!animateCircles)
-                                    {
-                                        animateCirclesStart = false;
-                                        SwapRecs(recs[i], recs[j]);
-                                    }
-                                    else
-                                    {
-                                        animateCirclesStart = true;
-                                        transformingDown = true;
-                                        TransformRecDown(recs[i]);
-                                        TransformRecDown(recs[j]);
-                                    }
-                                    fullSwapEnd = false;
+                                    animateCirclesStart = false;
+                                    SwapRecs(recs[i], recs[j]);
                                 }
-                                reciPrev = recs[i];
-                                recjPrev = recs[j];
-                            }
-                            catch { }
-                        });
+                                else
+                                {
+                                    animateCirclesStart = true;
+                                    transformingDown = true;
+                                    TransformRecDown(recs[i]);
+                                    TransformRecDown(recs[j]);
+                                }
+                            });
+                        }
+                        reciPrev = recs[i];
+                        recjPrev = recs[j];
+                        
                         while (!fullSwapEnd) { }
                         SafeInvoke(() =>
                         {
+                            UnlockRec(recs[i]);
+                            UnlockRec(recs[j]);
                             Canvas.SetZIndex(recs[i].rec, 0);
                             Canvas.SetZIndex(recs[j].rec, 1);
                             Canvas.SetZIndex(recs[i].tbNum, 2);
@@ -556,10 +661,7 @@ namespace DiplomPonomarev
                 }
                 SafeInvoke(() =>
                 {
-                    UnlockRecs();
                     sorting = false;
-                    this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
-                    this.MaximizeBox = true;
                 });
 
             });
@@ -576,16 +678,6 @@ namespace DiplomPonomarev
                     TransformRecUp(reci, reciHeight, reciTop);
                     TransformRecUp(recj, recjHeight, recjTop);
                 }
-                else fullSwapEnd = true;
-            }
-        }
-
-        void storybTransform_Completed(object sender, EventArgs e)
-        {
-            recsTransforming--;
-            if (recsTransforming == 0)
-            {
-                if (transformingDown) SwapRecs(reci, recj);
                 else fullSwapEnd = true;
             }
         }
@@ -613,23 +705,37 @@ namespace DiplomPonomarev
             graphicsComponent.storybSwap.Begin(graphicsComponent);
         }
 
+        void storybTransform_Completed(object sender, EventArgs e)
+        {
+            recsTransforming--;
+            if (recsTransforming == 0)
+            {
+                if (transformingDown) SwapRecs(reci, recj);
+                else fullSwapEnd = true;
+            }
+        }
+
         public void TransformRecDown(VisualRec r)
         {
-            recsTransforming++;
+            recsTransforming += 2;
             animTransformHeight.To = r.rec.Width;
             animTransformRadiusX.To = r.rec.Width / 2;
             animTransformRadiusY.To = r.rec.Width / 2;
-            animTransformTop.To = Canvas.GetTop(r.rec) + r.rec.Height + 5;
+            animTransformTop.To = Canvas.GetTop(r.rec) + r.rec.Height + offsetCircle;
             Storyboard.SetTarget(animTransformHeight, r.rec);
             Storyboard.SetTarget(animTransformRadiusX, r.rec);
             Storyboard.SetTarget(animTransformRadiusY, r.rec);
             Storyboard.SetTarget(animTransformTop, r.rec);
             graphicsComponent.storybTransform.Begin(graphicsComponent);
+
+            animTransformTop.To = animTransformTop.To + r.rec.Width / 2 - r.tbNum.ActualHeight / 2;
+            Storyboard.SetTarget(animTransformTop, r.tbNum);
+            graphicsComponent.storybTransform.Begin(graphicsComponent);
         }
 
         public void TransformRecUp(VisualRec r, double height, double top)
         {
-            recsTransforming++;
+            recsTransforming += 2;
             animTransformHeight.To = height;
             animTransformRadiusX.To = recRadius;
             animTransformRadiusY.To = recRadius;
@@ -638,6 +744,10 @@ namespace DiplomPonomarev
             Storyboard.SetTarget(animTransformRadiusX, r.rec);
             Storyboard.SetTarget(animTransformRadiusY, r.rec);
             Storyboard.SetTarget(animTransformTop, r.rec);
+            graphicsComponent.storybTransform.Begin(graphicsComponent);
+
+            animTransformTop.To = animTransformTop.To + height - r.tbNum.ActualHeight - offsetNum;
+            Storyboard.SetTarget(animTransformTop, r.tbNum);
             graphicsComponent.storybTransform.Begin(graphicsComponent);
         }
 
@@ -659,6 +769,11 @@ namespace DiplomPonomarev
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
             VisualSortBubble();
+        }
+
+        private void btnSortDesc_Click(object sender, EventArgs e)
+        {
+            VisualSortBubble(false);
         }
 
         private void toolStripButton2_Click_1(object sender, EventArgs e)
@@ -687,14 +802,15 @@ namespace DiplomPonomarev
 
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
+            if (sorting || elementHost1.Height < 300) return;
             for (int i = 0; i < recs.Count; i++)
             {
                 double height = recs[i].num * (elementHost1.Height - (offsetBottom + offsetTop)) / 100.0;
                 double y = elementHost1.Height - height - offsetBottom;
                 recs[i].rec.Height = height;
                 Canvas.SetTop(recs[i].rec, y);
-                Canvas.SetTop(recs[i].tbNum, y + height - recs[i].tbNum.ActualHeight - 4);
-                Canvas.SetTop(recs[i].tbIndex, y + height + 2);
+                Canvas.SetTop(recs[i].tbNum, y + height - recs[i].tbNum.ActualHeight - offsetNum);
+                Canvas.SetTop(recs[i].tbIndex, y + height + offsetIndex);
             }
         }
     }

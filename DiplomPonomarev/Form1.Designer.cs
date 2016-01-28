@@ -39,7 +39,6 @@ namespace DiplomPonomarev
             this.сортуванняToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.анімаціяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.btnGenData = new System.Windows.Forms.ToolStripButton();
             this.btnAddElements = new System.Windows.Forms.ToolStripButton();
             this.btnRemoveElements = new System.Windows.Forms.ToolStripButton();
             this.btnRandomize = new System.Windows.Forms.ToolStripButton();
@@ -107,7 +106,6 @@ namespace DiplomPonomarev
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnGenData,
             this.btnAddElements,
             this.btnRemoveElements,
             this.btnRandomize,
@@ -131,15 +129,6 @@ namespace DiplomPonomarev
             this.toolStrip1.Size = new System.Drawing.Size(834, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // btnGenData
-            // 
-            this.btnGenData.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnGenData.Image = ((System.Drawing.Image)(resources.GetObject("btnGenData.Image")));
-            this.btnGenData.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnGenData.Name = "btnGenData";
-            this.btnGenData.Size = new System.Drawing.Size(23, 22);
-            this.btnGenData.Text = "toolStripButton6";
             // 
             // btnAddElements
             // 
@@ -203,6 +192,7 @@ namespace DiplomPonomarev
             this.btnSortDesc.Name = "btnSortDesc";
             this.btnSortDesc.Size = new System.Drawing.Size(23, 22);
             this.btnSortDesc.Text = "toolStripButton5";
+            this.btnSortDesc.Click += new System.EventHandler(this.btnSortDesc_Click);
             // 
             // toolStripSeparator2
             // 
@@ -240,11 +230,9 @@ namespace DiplomPonomarev
             // 
             this.cmbSortType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbSortType.Items.AddRange(new object[] {
-            "Блочне",
             "Бульбашками",
             "Вставками",
-            "Швидке",
-            "Шелла"});
+            "Швидке"});
             this.cmbSortType.Name = "cmbSortType";
             this.cmbSortType.Size = new System.Drawing.Size(121, 25);
             // 
@@ -354,7 +342,6 @@ namespace DiplomPonomarev
         private System.Windows.Forms.ToolStripButton btnRemoveElements;
         private System.Windows.Forms.ToolStripButton btnRandomize;
         private System.Windows.Forms.ToolStripButton btnSortAsc;
-        private System.Windows.Forms.ToolStripButton btnGenData;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSortDesc;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
