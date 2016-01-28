@@ -1,5 +1,7 @@
 /DiplomPonomarev/bin
 /DiplomPonomarev/obj
+/GraphicsComponent/bin
+/GraphicsComponent/obj
 /lib/DirectX
 /lib/SharpDX
 *.suo
