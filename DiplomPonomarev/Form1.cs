@@ -83,21 +83,24 @@ namespace DiplomPonomarev
             }
         }
 
-        public enum StructType { List, Queue, Stack };
+        public enum StructType { Stack, Queue, List };
         public enum SortType { Bubble, Insertion, Quick };
 
-        public StructType structType = StructType.List;
+        public StructType structType = StructType.Stack;
         public SortType sortType = SortType.Bubble;
 
         public bool pushTail = false;
+        public bool popHead = true;
 
         public Form1()
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
             
-            cmbStruct.SelectedIndex = 0;
-            cmbSortType.SelectedIndex = 1;
+            cmbStructType.SelectedIndex = 0;
+            cmbSortType.SelectedIndex = 0;
+            cmbDestPush.SelectedIndex = 0;
+            cmbDestPop.SelectedIndex = 0;
 
             InitAnimations();
 
@@ -301,6 +304,8 @@ namespace DiplomPonomarev
                     {
                         recs[i].index++;
                         recs[i].tbIndex.Text = recs[i].index.ToString();
+                        recs[i].tbIndex.Measure(new Size());
+                        recs[i].tbIndex.Arrange(new Rect());
                         double xn = (i + 1.0) * (recWidth + offsetBetween) + offsetSides;
                         animMoveLeft.To = xn;
                         Storyboard.SetTarget(animMoveLeft, recs[i].rec);
@@ -331,6 +336,8 @@ namespace DiplomPonomarev
                 {
                     recs[i].index++;
                     recs[i].tbIndex.Text = recs[i].index.ToString();
+                    recs[i].tbIndex.Measure(new Size());
+                    recs[i].tbIndex.Arrange(new Rect());
                     double xn = (i + 1.0) * (recWidth + offsetBetween) + offsetSides;
                     Canvas.SetLeft(recs[i].rec, xn);
                     Canvas.SetLeft(recs[i].tbNum, xn + recWidth / 2 - recs[i].tbNum.ActualWidth / 2);
@@ -344,7 +351,12 @@ namespace DiplomPonomarev
 
         public bool CanPushTail()
         {
-            return structType == StructType.Stack || structType == StructType.Queue || (structType == StructType.List && pushTail);
+            return structType == StructType.Queue || (structType == StructType.List && pushTail);
+        }
+
+        public bool CanPopHead()
+        {
+            return structType == StructType.Stack || structType == StructType.Queue || (structType == StructType.List && popHead);
         }
 
         public bool EnoughSpace()
@@ -395,6 +407,26 @@ namespace DiplomPonomarev
             removeCounter++;
             if (removeCounter == 3)
             {
+                if (CanPopHead())
+                {
+                    for (int i = 0; i < recs.Count; i++)
+                    {
+                        recs[i].index--;
+                        recs[i].tbIndex.Text = recs[i].index.ToString();
+                        recs[i].tbIndex.Measure(new Size());
+                        recs[i].tbIndex.Arrange(new Rect());
+                        double xn = i * (recWidth + offsetBetween) + offsetSides;
+                        animMoveLeft.To = xn;
+                        Storyboard.SetTarget(animMoveLeft, recs[i].rec);
+                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        animMoveLeft.To = xn + recWidth / 2.0 - recs[i].tbNum.ActualWidth / 2.0;
+                        Storyboard.SetTarget(animMoveLeft, recs[i].tbNum);
+                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        animMoveLeft.To = xn + recWidth / 2.0 - recs[i].tbIndex.ActualWidth / 2.0;
+                        Storyboard.SetTarget(animMoveLeft, recs[i].tbIndex);
+                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                    }
+                }
                 removeCounter = 0;
                 VisualRec r = removeQueue.Dequeue();
                 canvas.Children.Remove(r.rec);
@@ -403,12 +435,26 @@ namespace DiplomPonomarev
             }
         }
         Queue<VisualRec> removeQueue = new Queue<VisualRec>();
-        public void RemoveRecAnimated()
+        public void RemoveRec(bool anim = true)
         {
             if (recs.Count == 0) return;
-            VisualRec r = recs.Last();
+            VisualRec r = null;
+            if (CanPopHead()) r = recs.First();
+            else r = recs.Last();
             recs.Remove(r);
             removeQueue.Enqueue(r);
+            if (anim)
+            {
+                animRemoveOpacity.Duration = TimeSpan.FromMilliseconds(600);
+                animRemoveOpacity.BeginTime = TimeSpan.FromMilliseconds(300);
+                animRemoveColor.Duration = TimeSpan.FromMilliseconds(300);
+            }
+            else
+            {
+                animRemoveOpacity.Duration = TimeSpan.FromMilliseconds(0);
+                animRemoveOpacity.BeginTime = TimeSpan.FromMilliseconds(0);
+                animRemoveColor.Duration = TimeSpan.FromMilliseconds(0);
+            }
             Storyboard.SetTarget(animRemoveColor, r.rec);
             Storyboard.SetTarget(animRemoveOpacity, r.rec);
             graphicsComponent.storybRemove.Begin(graphicsComponent);
@@ -418,22 +464,12 @@ namespace DiplomPonomarev
             graphicsComponent.storybRemove.Begin(graphicsComponent);
         }
 
-
-        public void RemoveRec()
-        {
-            if (recs.Count == 0) return;
-            VisualRec r = recs.Last();
-            recs.Remove(r);
-            canvas.Children.Remove(r.rec);
-            canvas.Children.Remove(r.tbNum);
-            canvas.Children.Remove(r.tbIndex);
-        }
         public void RemoveRecs()
         {
             if (recs.Count == 0) return;
             for (int i = 0; i < removeRecsCount; i++)
             {
-                RemoveRec();
+                RemoveRec(false);
             }
             removeRecsCount = recsPerAction;
         }
@@ -449,7 +485,7 @@ namespace DiplomPonomarev
                     {
                         try
                         {
-                            RemoveRecAnimated();
+                            RemoveRec();
                         }
                         catch { }
                     });
@@ -834,6 +870,40 @@ namespace DiplomPonomarev
             }
             hostHeightPrev = elementHost1.Height;
             hostWidthPrev = elementHost1.Width;
+        }
+
+        private void cmbStruct_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            structType = (StructType)cmbStructType.SelectedIndex;
+            if (structType == StructType.Stack)
+            {
+                cmbDestPush.SelectedIndex = 0;
+                cmbDestPop.SelectedIndex = 0;
+                cmbDestPush.Enabled = false;
+                cmbDestPop.Enabled = false;
+            }
+            else if (structType == StructType.Queue)
+            {
+                cmbDestPush.SelectedIndex = 1;
+                cmbDestPop.SelectedIndex = 0;
+                cmbDestPush.Enabled = false;
+                cmbDestPop.Enabled = false;
+            }
+            else
+            {
+                cmbDestPush.Enabled = true;
+                cmbDestPop.Enabled = true;
+            }
+        }
+
+        private void cmbDestPush_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            pushTail = cmbDestPush.SelectedIndex != 0;
+        }
+
+        private void cmbDestPop_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            popHead = cmbDestPop.SelectedIndex == 0;
         }
     }
 }
