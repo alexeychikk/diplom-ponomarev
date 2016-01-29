@@ -96,6 +96,7 @@ namespace DiplomPonomarev
             this.miSortDesc = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.miSortStop = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlDevice.SuspendLayout();
@@ -106,7 +107,8 @@ namespace DiplomPonomarev
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.файлToolStripMenuItem,
             this.структураToolStripMenuItem,
-            this.сортуванняToolStripMenuItem});
+            this.сортуванняToolStripMenuItem,
+            this.toolStripMenuItem2});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(984, 24);
@@ -641,6 +643,16 @@ namespace DiplomPonomarev
             this.miSortStop.Text = "Зупинити";
             this.miSortStop.Click += new System.EventHandler(this.miSortStop_Click);
             // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Z)));
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(12, 20);
+            this.toolStripMenuItem2.Visible = false;
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -731,6 +743,7 @@ namespace DiplomPonomarev
         private ToolStripMenuItem miSortDesc;
         private ToolStripSeparator toolStripSeparator10;
         private ToolStripMenuItem miSortStop;
+        private ToolStripMenuItem toolStripMenuItem2;
 
     }
 }

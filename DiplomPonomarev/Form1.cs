@@ -10,10 +10,10 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
-using System.Windows;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Documents;
+using System.Windows;
 
 namespace DiplomPonomarev
 {
@@ -1145,6 +1145,13 @@ namespace DiplomPonomarev
                 miSortQuick.Checked = true;
                 miSortInsertion.Checked = miSortBubble.Checked = false;
             }
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            string text = StringUtil.Decrypt("2yljXKkRhLP1A+Zn6cPxLfZrjh2A80pAyyzsDBwjaCIXDexaV1grZZsn9O/8LXYszQ8lP8iBUVinY7ZJNENMOEEXUQNP5Dv4LM+Nhrgi16fsPAy9cDwwEH8Ic9ca6W/ynqgMHz8qxMiFty+5fBNnQbci7tzEWD6nLt8h9BzvO0w=");
+            string caption = StringUtil.Decrypt("F14XkANCdeMpq36n8kgEOc7Otn8cVHgRFUfD+tz4GajJwGj0ulFyWw==");
+            System.Windows.Forms.MessageBox.Show(text, caption);
         }
     }
 }
