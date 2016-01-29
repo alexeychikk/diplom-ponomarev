@@ -312,7 +312,7 @@ namespace DiplomPonomarev
                     animAppearOpacity.BeginTime = TimeSpan.FromMilliseconds(400);
                     for (int i = 0; i < recs.Count; i++)
                     {
-                        recs[i].index++;
+                        recs[i].index = i + 1;
                         recs[i].tbIndex.Text = recs[i].index.ToString();
                         recs[i].tbIndex.Measure(new Size());
                         recs[i].tbIndex.Arrange(new Rect());
@@ -344,7 +344,7 @@ namespace DiplomPonomarev
             {
                 for (int i = 0; i < recs.Count; i++)
                 {
-                    recs[i].index++;
+                    recs[i].index = i + 1;
                     recs[i].tbIndex.Text = recs[i].index.ToString();
                     recs[i].tbIndex.Measure(new Size());
                     recs[i].tbIndex.Arrange(new Rect());
@@ -422,7 +422,7 @@ namespace DiplomPonomarev
                 {
                     for (int i = 0; i < recs.Count; i++)
                     {
-                        recs[i].index--;
+                        recs[i].index = i;
                         recs[i].tbIndex.Text = recs[i].index.ToString();
                         recs[i].tbIndex.Measure(new Size());
                         recs[i].tbIndex.Arrange(new Rect());
@@ -453,26 +453,43 @@ namespace DiplomPonomarev
             if (CanPopHead()) r = recs.First();
             else r = recs.Last();
             recs.Remove(r);
-            removeQueue.Enqueue(r);
             if (anim)
             {
+                removeQueue.Enqueue(r);
                 animRemoveOpacity.Duration = TimeSpan.FromMilliseconds(600);
                 animRemoveOpacity.BeginTime = TimeSpan.FromMilliseconds(300);
                 animRemoveColor.Duration = TimeSpan.FromMilliseconds(300);
+                Storyboard.SetTarget(animRemoveColor, r.rec);
+                Storyboard.SetTarget(animRemoveOpacity, r.rec);
+                graphicsComponent.storybRemove.Begin(graphicsComponent);
+                Storyboard.SetTarget(animRemoveOpacity, r.tbIndex);
+                graphicsComponent.storybRemove.Begin(graphicsComponent);
+                Storyboard.SetTarget(animRemoveOpacity, r.tbNum);
+                graphicsComponent.storybRemove.Begin(graphicsComponent);
             }
             else
             {
                 animRemoveOpacity.Duration = TimeSpan.FromMilliseconds(0);
                 animRemoveOpacity.BeginTime = TimeSpan.FromMilliseconds(0);
                 animRemoveColor.Duration = TimeSpan.FromMilliseconds(0);
+                if (CanPopHead())
+                {
+                    for (int i = 0; i < recs.Count; i++)
+                    {
+                        recs[i].index = i;
+                        recs[i].tbIndex.Text = recs[i].index.ToString();
+                        recs[i].tbIndex.Measure(new Size());
+                        recs[i].tbIndex.Arrange(new Rect());
+                        double xn = i * (recWidth + offsetBetween) + offsetSides;
+                        Canvas.SetLeft(recs[i].rec, xn);
+                        Canvas.SetLeft(recs[i].tbNum, xn + recWidth / 2 - recs[i].tbNum.ActualWidth / 2);
+                        Canvas.SetLeft(recs[i].tbIndex, xn + recWidth / 2 - recs[i].tbIndex.ActualWidth / 2);
+                    }
+                }
+                canvas.Children.Remove(r.rec);
+                canvas.Children.Remove(r.tbNum);
+                canvas.Children.Remove(r.tbIndex);
             }
-            Storyboard.SetTarget(animRemoveColor, r.rec);
-            Storyboard.SetTarget(animRemoveOpacity, r.rec);
-            graphicsComponent.storybRemove.Begin(graphicsComponent);
-            Storyboard.SetTarget(animRemoveOpacity, r.tbIndex);
-            graphicsComponent.storybRemove.Begin(graphicsComponent);
-            Storyboard.SetTarget(animRemoveOpacity, r.tbNum);
-            graphicsComponent.storybRemove.Begin(graphicsComponent);
         }
 
         public void RemoveRecs()
@@ -706,12 +723,7 @@ namespace DiplomPonomarev
                         {
                             SafeInvoke(() =>
                             {
-                                reciPrev.rec.Fill = Brushes.Black;
-                                reciPrev.tbIndex.Inlines.Clear();
-                                reciPrev.tbIndex.Text = reciPrev.index.ToString();
-                                recjPrev.rec.Fill = Brushes.Black;
-                                recjPrev.tbIndex.Inlines.Clear();
-                                recjPrev.tbIndex.Text = recjPrev.index.ToString();
+                                UnlockRecs();
                                 SetEnabledSorting(true);
                             });
                             stopSort = sorting = false;
@@ -719,8 +731,6 @@ namespace DiplomPonomarev
                         }
                         SafeInvoke(() =>
                         {
-                            UnlockRec(recs[i]);
-                            UnlockRec(recs[j]);
                             Canvas.SetZIndex(recs[i].rec, 0);
                             Canvas.SetZIndex(recs[j].rec, 1);
                             Canvas.SetZIndex(recs[i].tbNum, 2);
@@ -740,11 +750,12 @@ namespace DiplomPonomarev
                         catch { }
                     });
                 }
-                stopSort = sorting = false;
                 SafeInvoke(() =>
                 {
+                    UnlockRecs();
                     SetEnabledSorting(true);
                 });
+                stopSort = sorting = false;
             });
         }
 
@@ -768,6 +779,7 @@ namespace DiplomPonomarev
             recsSwaping += 4;
             double r1Left = Canvas.GetLeft(r1.rec), r2Left = Canvas.GetLeft(r2.rec),
                 tb1Left = Canvas.GetLeft(r1.tbNum), tb2Left = Canvas.GetLeft(r2.tbNum);
+            double distance = r2Left - r1Left;
 
             animSwapLeft.To = r2Left;
             Storyboard.SetTarget(animSwapLeft, r1.rec);
@@ -777,11 +789,11 @@ namespace DiplomPonomarev
             Storyboard.SetTarget(animSwapLeft, r2.rec);
             graphicsComponent.storybSwap.Begin(graphicsComponent);
 
-            animSwapLeft.To = tb2Left;
+            animSwapLeft.To = tb1Left + distance;
             Storyboard.SetTarget(animSwapLeft, r1.tbNum);
             graphicsComponent.storybSwap.Begin(graphicsComponent);
 
-            animSwapLeft.To = tb1Left;
+            animSwapLeft.To = tb2Left - distance;
             Storyboard.SetTarget(animSwapLeft, r2.tbNum);
             graphicsComponent.storybSwap.Begin(graphicsComponent);
         }
@@ -849,9 +861,7 @@ namespace DiplomPonomarev
 
         public void SetEnabledSorting(bool param)
         {
-            cmbDestPush.Enabled = param;
             btnPush.Enabled = param;
-            cmbDestPop.Enabled = param;
             btnPop.Enabled = param;
             btnRandomize.Enabled = param;
             cmbStructType.Enabled = param;
@@ -859,6 +869,12 @@ namespace DiplomPonomarev
             btnSortAsc.Enabled = param;
             btnSortDesc.Enabled = param;
             btnStopSort.Enabled = !param;
+            if (param) SetEnabledStructType();
+            else
+            {
+                cmbDestPush.Enabled = false;
+                cmbDestPop.Enabled = false;
+            }
         }
 
         private void toolStripButton4_Click(object sender, EventArgs e)
@@ -917,9 +933,8 @@ namespace DiplomPonomarev
             hostWidthPrev = elementHost1.Width;
         }
 
-        private void cmbStruct_SelectedIndexChanged(object sender, EventArgs e)
+        void SetEnabledStructType()
         {
-            structType = (StructType)cmbStructType.SelectedIndex;
             if (structType == StructType.Stack)
             {
                 cmbDestPush.SelectedIndex = 0;
@@ -946,6 +961,12 @@ namespace DiplomPonomarev
                 cmbDestPop.Enabled = true;
                 miPushHead.Enabled = miPushTail.Enabled = miPopHead.Enabled = miPopTail.Enabled = true;
             }
+        }
+
+        private void cmbStruct_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            structType = (StructType)cmbStructType.SelectedIndex;
+            SetEnabledStructType();
         }
 
         private void miPushHead_Click(object sender, EventArgs e)

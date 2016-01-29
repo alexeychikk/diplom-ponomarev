@@ -57,7 +57,6 @@ namespace DiplomPonomarev
             this.вихідToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.структураToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.сортуванняToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.анімаціяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
             this.cmbDestPush = new System.Windows.Forms.ToolStripComboBox();
@@ -86,6 +85,17 @@ namespace DiplomPonomarev
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.graphicsComponent = new GraphicsComponent.GraphicsComponent();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.стекToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.чергаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.списокToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.бульбашкамиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.вставкамиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.швидкеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.заЗростаннямToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.заСпаданнямToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.зупинитиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlDevice.SuspendLayout();
@@ -96,8 +106,7 @@ namespace DiplomPonomarev
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.файлToolStripMenuItem,
             this.структураToolStripMenuItem,
-            this.сортуванняToolStripMenuItem,
-            this.анімаціяToolStripMenuItem});
+            this.сортуванняToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(984, 24);
@@ -275,21 +284,28 @@ namespace DiplomPonomarev
             // 
             // структураToolStripMenuItem
             // 
+            this.структураToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.стекToolStripMenuItem,
+            this.чергаToolStripMenuItem,
+            this.списокToolStripMenuItem});
             this.структураToolStripMenuItem.Name = "структураToolStripMenuItem";
             this.структураToolStripMenuItem.Size = new System.Drawing.Size(75, 20);
             this.структураToolStripMenuItem.Text = "Структура";
             // 
             // сортуванняToolStripMenuItem
             // 
+            this.сортуванняToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.бульбашкамиToolStripMenuItem,
+            this.вставкамиToolStripMenuItem,
+            this.швидкеToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.заЗростаннямToolStripMenuItem,
+            this.заСпаданнямToolStripMenuItem,
+            this.toolStripSeparator10,
+            this.зупинитиToolStripMenuItem});
             this.сортуванняToolStripMenuItem.Name = "сортуванняToolStripMenuItem";
             this.сортуванняToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.сортуванняToolStripMenuItem.Text = "Сортування";
-            // 
-            // анімаціяToolStripMenuItem
-            // 
-            this.анімаціяToolStripMenuItem.Name = "анімаціяToolStripMenuItem";
-            this.анімаціяToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
-            this.анімаціяToolStripMenuItem.Text = "Анімація";
             // 
             // toolStrip1
             // 
@@ -546,6 +562,75 @@ namespace DiplomPonomarev
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // стекToolStripMenuItem
+            // 
+            this.стекToolStripMenuItem.Checked = true;
+            this.стекToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.стекToolStripMenuItem.Name = "стекToolStripMenuItem";
+            this.стекToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.стекToolStripMenuItem.Text = "Стек";
+            // 
+            // чергаToolStripMenuItem
+            // 
+            this.чергаToolStripMenuItem.Name = "чергаToolStripMenuItem";
+            this.чергаToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.чергаToolStripMenuItem.Text = "Черга";
+            // 
+            // списокToolStripMenuItem
+            // 
+            this.списокToolStripMenuItem.Name = "списокToolStripMenuItem";
+            this.списокToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.списокToolStripMenuItem.Text = "Список";
+            // 
+            // бульбашкамиToolStripMenuItem
+            // 
+            this.бульбашкамиToolStripMenuItem.Checked = true;
+            this.бульбашкамиToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.бульбашкамиToolStripMenuItem.Name = "бульбашкамиToolStripMenuItem";
+            this.бульбашкамиToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.бульбашкамиToolStripMenuItem.Text = "Бульбашками";
+            // 
+            // вставкамиToolStripMenuItem
+            // 
+            this.вставкамиToolStripMenuItem.Name = "вставкамиToolStripMenuItem";
+            this.вставкамиToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.вставкамиToolStripMenuItem.Text = "Вставками";
+            // 
+            // швидкеToolStripMenuItem
+            // 
+            this.швидкеToolStripMenuItem.Name = "швидкеToolStripMenuItem";
+            this.швидкеToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.швидкеToolStripMenuItem.Text = "Швидке";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(152, 6);
+            // 
+            // заЗростаннямToolStripMenuItem
+            // 
+            this.заЗростаннямToolStripMenuItem.Name = "заЗростаннямToolStripMenuItem";
+            this.заЗростаннямToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.заЗростаннямToolStripMenuItem.Text = "За зростанням";
+            // 
+            // заСпаданнямToolStripMenuItem
+            // 
+            this.заСпаданнямToolStripMenuItem.Name = "заСпаданнямToolStripMenuItem";
+            this.заСпаданнямToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.заСпаданнямToolStripMenuItem.Text = "За спаданням";
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(152, 6);
+            // 
+            // зупинитиToolStripMenuItem
+            // 
+            this.зупинитиToolStripMenuItem.Enabled = false;
+            this.зупинитиToolStripMenuItem.Name = "зупинитиToolStripMenuItem";
+            this.зупинитиToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.зупинитиToolStripMenuItem.Text = "Зупинити";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -555,6 +640,7 @@ namespace DiplomPonomarev
             this.Controls.Add(this.pnlDevice);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(1000, 500);
             this.Name = "Form1";
@@ -590,7 +676,6 @@ namespace DiplomPonomarev
         private System.Windows.Forms.ToolStripComboBox cmbSortType;
         private System.Windows.Forms.ToolStripMenuItem структураToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem сортуванняToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem анімаціяToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton btnStopSort;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private ToolStripButton toolStripButton2;
@@ -625,6 +710,17 @@ namespace DiplomPonomarev
         private ToolStripSeparator toolStripSeparator9;
         private ToolStripMenuItem вихідToolStripMenuItem;
         private ToolStripMenuItem miRandomize;
+        private ToolStripMenuItem стекToolStripMenuItem;
+        private ToolStripMenuItem чергаToolStripMenuItem;
+        private ToolStripMenuItem списокToolStripMenuItem;
+        private ToolStripMenuItem бульбашкамиToolStripMenuItem;
+        private ToolStripMenuItem вставкамиToolStripMenuItem;
+        private ToolStripMenuItem швидкеToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem заЗростаннямToolStripMenuItem;
+        private ToolStripMenuItem заСпаданнямToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator10;
+        private ToolStripMenuItem зупинитиToolStripMenuItem;
 
     }
 }
