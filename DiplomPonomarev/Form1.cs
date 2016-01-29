@@ -861,14 +861,15 @@ namespace DiplomPonomarev
 
         public void SetEnabledSorting(bool param)
         {
-            btnPush.Enabled = param;
-            btnPop.Enabled = param;
-            btnRandomize.Enabled = param;
-            cmbStructType.Enabled = param;
-            cmbSortType.Enabled = param;
-            btnSortAsc.Enabled = param;
-            btnSortDesc.Enabled = param;
+            btnPush.Enabled = btnPop.Enabled = btnRandomize.Enabled = param;
+            cmbStructType.Enabled = cmbSortType.Enabled = param;
+            btnSortAsc.Enabled = btnSortDesc.Enabled = param;
             btnStopSort.Enabled = !param;
+            miPush.Enabled = miPop.Enabled = miRandomize.Enabled = param;
+            miStructList.Enabled = miStructQueue.Enabled = miStructStack.Enabled = param;
+            miSortBubble.Enabled = miSortInsertion.Enabled = miSortQuick.Enabled = param;
+            miSortAsc.Enabled = miSortDesc.Enabled = param;
+            miSortStop.Enabled = !param;
             if (param) SetEnabledStructType();
             else
             {
@@ -944,6 +945,8 @@ namespace DiplomPonomarev
                 miPushHead.Checked = miPopHead.Checked = true;
                 miPushTail.Checked = miPopTail.Checked = false;
                 miPushHead.Enabled = miPushTail.Enabled = miPopHead.Enabled = miPopTail.Enabled = false;
+                miStructStack.Checked = true;
+                miStructQueue.Checked = miStructList.Checked = false;
             }
             else if (structType == StructType.Queue)
             {
@@ -954,12 +957,16 @@ namespace DiplomPonomarev
                 miPushHead.Checked = miPopTail.Checked = false;
                 miPushTail.Checked = miPopHead.Checked = true;
                 miPushHead.Enabled = miPushTail.Enabled = miPopHead.Enabled = miPopTail.Enabled = false;
+                miStructQueue.Checked = true;
+                miStructStack.Checked = miStructList.Checked = false;
             }
             else
             {
                 cmbDestPush.Enabled = true;
                 cmbDestPop.Enabled = true;
                 miPushHead.Enabled = miPushTail.Enabled = miPopHead.Enabled = miPopTail.Enabled = true;
+                miStructList.Checked = true;
+                miStructQueue.Checked = miStructStack.Checked = false;
             }
         }
 
@@ -1071,6 +1078,73 @@ namespace DiplomPonomarev
         private void miRandomize_Click(object sender, EventArgs e)
         {
             RefreshRecsAsync();
+        }
+
+        private void miStructStack_Click(object sender, EventArgs e)
+        {
+            cmbStructType.SelectedIndex = 0;
+        }
+
+        private void miStructQueue_Click(object sender, EventArgs e)
+        {
+            cmbStructType.SelectedIndex = 1;
+        }
+
+        private void miStructList_Click(object sender, EventArgs e)
+        {
+            cmbStructType.SelectedIndex = 2;
+        }
+
+        private void miSortBubble_Click(object sender, EventArgs e)
+        {
+            cmbSortType.SelectedIndex = 0;
+        }
+
+        private void miSortInsertion_Click(object sender, EventArgs e)
+        {
+            cmbSortType.SelectedIndex = 1;
+        }
+
+        private void miSortQuick_Click(object sender, EventArgs e)
+        {
+            cmbSortType.SelectedIndex = 2;
+        }
+
+        private void miSortAsc_Click(object sender, EventArgs e)
+        {
+            SetEnabledSorting(false);
+            VisualSortBubble();
+        }
+
+        private void miSortDesc_Click(object sender, EventArgs e)
+        {
+            SetEnabledSorting(false);
+            VisualSortBubble(false);
+        }
+
+        private void miSortStop_Click(object sender, EventArgs e)
+        {
+            stopSort = true;
+        }
+
+        private void cmbSortType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            sortType = (SortType)cmbSortType.SelectedIndex;
+            if (sortType == SortType.Bubble)
+            {
+                miSortBubble.Checked = true;
+                miSortInsertion.Checked = miSortQuick.Checked = false;
+            }
+            else if (sortType == SortType.Insertion)
+            {
+                miSortInsertion.Checked = true;
+                miSortBubble.Checked = miSortQuick.Checked = false;
+            }
+            else
+            {
+                miSortQuick.Checked = true;
+                miSortInsertion.Checked = miSortBubble.Checked = false;
+            }
         }
     }
 }

@@ -37,7 +37,7 @@ namespace DiplomPonomarev
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miPush = new System.Windows.Forms.ToolStripMenuItem();
-            this.вставитиВToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mi = new System.Windows.Forms.ToolStripMenuItem();
             this.miPushHead = new System.Windows.Forms.ToolStripMenuItem();
             this.miPushTail = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
@@ -85,17 +85,17 @@ namespace DiplomPonomarev
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.graphicsComponent = new GraphicsComponent.GraphicsComponent();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.стекToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.чергаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.списокToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.бульбашкамиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.вставкамиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.швидкеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miStructStack = new System.Windows.Forms.ToolStripMenuItem();
+            this.miStructQueue = new System.Windows.Forms.ToolStripMenuItem();
+            this.miStructList = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortBubble = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortInsertion = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortQuick = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.заЗростаннямToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.заСпаданнямToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortAsc = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortDesc = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.зупинитиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortStop = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlDevice.SuspendLayout();
@@ -117,7 +117,7 @@ namespace DiplomPonomarev
             // 
             this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miPush,
-            this.вставитиВToolStripMenuItem,
+            this.mi,
             this.toolStripSeparator7,
             this.miPop,
             this.видалитиЗToolStripMenuItem,
@@ -138,14 +138,14 @@ namespace DiplomPonomarev
             this.miPush.Text = "Вставити елемент(и)";
             this.miPush.Click += new System.EventHandler(this.miPush_Click);
             // 
-            // вставитиВToolStripMenuItem
+            // mi
             // 
-            this.вставитиВToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miPushHead,
             this.miPushTail});
-            this.вставитиВToolStripMenuItem.Name = "вставитиВToolStripMenuItem";
-            this.вставитиВToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.вставитиВToolStripMenuItem.Text = "Вставити в";
+            this.mi.Name = "mi";
+            this.mi.Size = new System.Drawing.Size(190, 22);
+            this.mi.Text = "Вставити в";
             // 
             // miPushHead
             // 
@@ -285,9 +285,9 @@ namespace DiplomPonomarev
             // структураToolStripMenuItem
             // 
             this.структураToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.стекToolStripMenuItem,
-            this.чергаToolStripMenuItem,
-            this.списокToolStripMenuItem});
+            this.miStructStack,
+            this.miStructQueue,
+            this.miStructList});
             this.структураToolStripMenuItem.Name = "структураToolStripMenuItem";
             this.структураToolStripMenuItem.Size = new System.Drawing.Size(75, 20);
             this.структураToolStripMenuItem.Text = "Структура";
@@ -295,14 +295,14 @@ namespace DiplomPonomarev
             // сортуванняToolStripMenuItem
             // 
             this.сортуванняToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.бульбашкамиToolStripMenuItem,
-            this.вставкамиToolStripMenuItem,
-            this.швидкеToolStripMenuItem,
+            this.miSortBubble,
+            this.miSortInsertion,
+            this.miSortQuick,
             this.toolStripSeparator2,
-            this.заЗростаннямToolStripMenuItem,
-            this.заСпаданнямToolStripMenuItem,
+            this.miSortAsc,
+            this.miSortDesc,
             this.toolStripSeparator10,
-            this.зупинитиToolStripMenuItem});
+            this.miSortStop});
             this.сортуванняToolStripMenuItem.Name = "сортуванняToolStripMenuItem";
             this.сортуванняToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.сортуванняToolStripMenuItem.Text = "Сортування";
@@ -456,6 +456,7 @@ namespace DiplomPonomarev
             "Швидке"});
             this.cmbSortType.Name = "cmbSortType";
             this.cmbSortType.Size = new System.Drawing.Size(110, 25);
+            this.cmbSortType.SelectedIndexChanged += new System.EventHandler(this.cmbSortType_SelectedIndexChanged);
             // 
             // btnSortAsc
             // 
@@ -562,74 +563,83 @@ namespace DiplomPonomarev
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // стекToolStripMenuItem
+            // miStructStack
             // 
-            this.стекToolStripMenuItem.Checked = true;
-            this.стекToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.стекToolStripMenuItem.Name = "стекToolStripMenuItem";
-            this.стекToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.стекToolStripMenuItem.Text = "Стек";
+            this.miStructStack.Checked = true;
+            this.miStructStack.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miStructStack.Name = "miStructStack";
+            this.miStructStack.Size = new System.Drawing.Size(152, 22);
+            this.miStructStack.Text = "Стек";
+            this.miStructStack.Click += new System.EventHandler(this.miStructStack_Click);
             // 
-            // чергаToolStripMenuItem
+            // miStructQueue
             // 
-            this.чергаToolStripMenuItem.Name = "чергаToolStripMenuItem";
-            this.чергаToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.чергаToolStripMenuItem.Text = "Черга";
+            this.miStructQueue.Name = "miStructQueue";
+            this.miStructQueue.Size = new System.Drawing.Size(152, 22);
+            this.miStructQueue.Text = "Черга";
+            this.miStructQueue.Click += new System.EventHandler(this.miStructQueue_Click);
             // 
-            // списокToolStripMenuItem
+            // miStructList
             // 
-            this.списокToolStripMenuItem.Name = "списокToolStripMenuItem";
-            this.списокToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.списокToolStripMenuItem.Text = "Список";
+            this.miStructList.Name = "miStructList";
+            this.miStructList.Size = new System.Drawing.Size(152, 22);
+            this.miStructList.Text = "Список";
+            this.miStructList.Click += new System.EventHandler(this.miStructList_Click);
             // 
-            // бульбашкамиToolStripMenuItem
+            // miSortBubble
             // 
-            this.бульбашкамиToolStripMenuItem.Checked = true;
-            this.бульбашкамиToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.бульбашкамиToolStripMenuItem.Name = "бульбашкамиToolStripMenuItem";
-            this.бульбашкамиToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.бульбашкамиToolStripMenuItem.Text = "Бульбашками";
+            this.miSortBubble.Checked = true;
+            this.miSortBubble.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miSortBubble.Name = "miSortBubble";
+            this.miSortBubble.Size = new System.Drawing.Size(155, 22);
+            this.miSortBubble.Text = "Бульбашками";
+            this.miSortBubble.Click += new System.EventHandler(this.miSortBubble_Click);
             // 
-            // вставкамиToolStripMenuItem
+            // miSortInsertion
             // 
-            this.вставкамиToolStripMenuItem.Name = "вставкамиToolStripMenuItem";
-            this.вставкамиToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.вставкамиToolStripMenuItem.Text = "Вставками";
+            this.miSortInsertion.Name = "miSortInsertion";
+            this.miSortInsertion.Size = new System.Drawing.Size(155, 22);
+            this.miSortInsertion.Text = "Вставками";
+            this.miSortInsertion.Click += new System.EventHandler(this.miSortInsertion_Click);
             // 
-            // швидкеToolStripMenuItem
+            // miSortQuick
             // 
-            this.швидкеToolStripMenuItem.Name = "швидкеToolStripMenuItem";
-            this.швидкеToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.швидкеToolStripMenuItem.Text = "Швидке";
+            this.miSortQuick.Name = "miSortQuick";
+            this.miSortQuick.Size = new System.Drawing.Size(155, 22);
+            this.miSortQuick.Text = "Швидке";
+            this.miSortQuick.Click += new System.EventHandler(this.miSortQuick_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(152, 6);
             // 
-            // заЗростаннямToolStripMenuItem
+            // miSortAsc
             // 
-            this.заЗростаннямToolStripMenuItem.Name = "заЗростаннямToolStripMenuItem";
-            this.заЗростаннямToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.заЗростаннямToolStripMenuItem.Text = "За зростанням";
+            this.miSortAsc.Name = "miSortAsc";
+            this.miSortAsc.Size = new System.Drawing.Size(155, 22);
+            this.miSortAsc.Text = "За зростанням";
+            this.miSortAsc.Click += new System.EventHandler(this.miSortAsc_Click);
             // 
-            // заСпаданнямToolStripMenuItem
+            // miSortDesc
             // 
-            this.заСпаданнямToolStripMenuItem.Name = "заСпаданнямToolStripMenuItem";
-            this.заСпаданнямToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.заСпаданнямToolStripMenuItem.Text = "За спаданням";
+            this.miSortDesc.Name = "miSortDesc";
+            this.miSortDesc.Size = new System.Drawing.Size(155, 22);
+            this.miSortDesc.Text = "За спаданням";
+            this.miSortDesc.Click += new System.EventHandler(this.miSortDesc_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
             this.toolStripSeparator10.Size = new System.Drawing.Size(152, 6);
             // 
-            // зупинитиToolStripMenuItem
+            // miSortStop
             // 
-            this.зупинитиToolStripMenuItem.Enabled = false;
-            this.зупинитиToolStripMenuItem.Name = "зупинитиToolStripMenuItem";
-            this.зупинитиToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.зупинитиToolStripMenuItem.Text = "Зупинити";
+            this.miSortStop.Enabled = false;
+            this.miSortStop.Name = "miSortStop";
+            this.miSortStop.Size = new System.Drawing.Size(155, 22);
+            this.miSortStop.Text = "Зупинити";
+            this.miSortStop.Click += new System.EventHandler(this.miSortStop_Click);
             // 
             // Form1
             // 
@@ -692,7 +702,7 @@ namespace DiplomPonomarev
         private ToolStripLabel toolStripLabel5;
         private ToolStripComboBox cmbDestPop;
         private ToolStripMenuItem miPush;
-        private ToolStripMenuItem вставитиВToolStripMenuItem;
+        private ToolStripMenuItem mi;
         private ToolStripMenuItem miPushHead;
         private ToolStripMenuItem miPushTail;
         private ToolStripSeparator toolStripSeparator7;
@@ -710,17 +720,17 @@ namespace DiplomPonomarev
         private ToolStripSeparator toolStripSeparator9;
         private ToolStripMenuItem вихідToolStripMenuItem;
         private ToolStripMenuItem miRandomize;
-        private ToolStripMenuItem стекToolStripMenuItem;
-        private ToolStripMenuItem чергаToolStripMenuItem;
-        private ToolStripMenuItem списокToolStripMenuItem;
-        private ToolStripMenuItem бульбашкамиToolStripMenuItem;
-        private ToolStripMenuItem вставкамиToolStripMenuItem;
-        private ToolStripMenuItem швидкеToolStripMenuItem;
+        private ToolStripMenuItem miStructStack;
+        private ToolStripMenuItem miStructQueue;
+        private ToolStripMenuItem miStructList;
+        private ToolStripMenuItem miSortBubble;
+        private ToolStripMenuItem miSortInsertion;
+        private ToolStripMenuItem miSortQuick;
         private ToolStripSeparator toolStripSeparator2;
-        private ToolStripMenuItem заЗростаннямToolStripMenuItem;
-        private ToolStripMenuItem заСпаданнямToolStripMenuItem;
+        private ToolStripMenuItem miSortAsc;
+        private ToolStripMenuItem miSortDesc;
         private ToolStripSeparator toolStripSeparator10;
-        private ToolStripMenuItem зупинитиToolStripMenuItem;
+        private ToolStripMenuItem miSortStop;
 
     }
 }
