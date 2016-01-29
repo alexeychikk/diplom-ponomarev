@@ -92,6 +92,11 @@ namespace DiplomPonomarev
         public bool pushTail = false;
         public bool popHead = true;
 
+        public bool stopSort = false;
+
+        public bool randomValue = true;
+        public bool autoAmount = true;
+
         public Form1()
         {
             InitializeComponent();
@@ -101,6 +106,9 @@ namespace DiplomPonomarev
             cmbSortType.SelectedIndex = 0;
             cmbDestPush.SelectedIndex = 0;
             cmbDestPop.SelectedIndex = 0;
+
+            tbAmount.LostFocus += tbAmount_LostFocus;
+            tbValue.LostFocus += tbValue_LostFocus;
 
             InitAnimations();
 
@@ -244,9 +252,11 @@ namespace DiplomPonomarev
             startRecsCount = (int)((elementHost1.Width - offsetSides * 2) / (recWidth + offsetBetween));
         }
 
-        public void AddRec(bool anim = true, int num = -1)
+        public void AddRec(bool anim = true)
         {
-            if (num == -1) num = rnd.Next(minRecHeight, maxRecHeight);
+            int num = 0;
+            if (randomValue) num = rnd.Next(minRecHeight, maxRecHeight);
+            else num = int.Parse(tbValue.Text);
             double height = num * (elementHost1.Height - (offsetBottom + offsetTop)) / 100.0;
             int index = 0; double x = offsetSides, y = elementHost1.Height - height - offsetBottom;
             if (CanPushTail())
@@ -380,9 +390,10 @@ namespace DiplomPonomarev
             {
                 if (!EnoughSpace()) return;
                 bool enoughSpace = true;
+                int addAmount = autoAmount ? addRecsCount : int.Parse(tbAmount.Text);
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                for (int i = 0; i < addRecsCount; i++)
+                for (int i = 0; i < addAmount; i++)
                 {
                     SafeInvoke(() =>
                     {
@@ -393,7 +404,7 @@ namespace DiplomPonomarev
                         }
                         catch (Exception e) { }
                     });
-                    Thread.Sleep(500 / addRecsCount);
+                    Thread.Sleep(500 / addAmount);
                     if (!enoughSpace) break;
                 }
                 addRecsCount = recsPerAction;
@@ -470,16 +481,18 @@ namespace DiplomPonomarev
             for (int i = 0; i < removeRecsCount; i++)
             {
                 RemoveRec(false);
+                if (recs.Count == 0) return;
             }
             removeRecsCount = recsPerAction;
         }
 
-        public Task RemoveRecAsync()
+        public Task RemoveRecsAsync()
         {
             return Task.Run(() =>
             {
                 if (recs.Count == 0) return;
-                for (int i = 0; i < removeRecsCount; i++)
+                int removeAmount = autoAmount ? removeRecsCount : int.Parse(tbAmount.Text);
+                for (int i = 0; i < removeAmount; i++)
                 {
                     SafeInvoke(() =>
                     {
@@ -489,7 +502,8 @@ namespace DiplomPonomarev
                         }
                         catch { }
                     });
-                    Thread.Sleep(500 / removeRecsCount);
+                    if (recs.Count == 0) return;
+                    Thread.Sleep(500 / removeAmount);
                 }
                 removeRecsCount = recsPerAction;
             });
@@ -616,7 +630,7 @@ namespace DiplomPonomarev
                     {
                         SafeInvoke(() =>
                         {
-                            if (reciPrev != null)
+                            if (reciPrev != null && reciPrev != recs[i])
                             {
                                 reciPrev.rec.Fill = Brushes.Black;
                                 reciPrev.tbIndex.Inlines.Clear();
@@ -688,6 +702,21 @@ namespace DiplomPonomarev
                         recjPrev = recs[j];
                         
                         while (!fullSwapEnd) { }
+                        if (stopSort)
+                        {
+                            SafeInvoke(() =>
+                            {
+                                reciPrev.rec.Fill = Brushes.Black;
+                                reciPrev.tbIndex.Inlines.Clear();
+                                reciPrev.tbIndex.Text = reciPrev.index.ToString();
+                                recjPrev.rec.Fill = Brushes.Black;
+                                recjPrev.tbIndex.Inlines.Clear();
+                                recjPrev.tbIndex.Text = recjPrev.index.ToString();
+                                SetEnabledSorting(true);
+                            });
+                            stopSort = sorting = false;
+                            return;
+                        }
                         SafeInvoke(() =>
                         {
                             UnlockRec(recs[i]);
@@ -711,11 +740,11 @@ namespace DiplomPonomarev
                         catch { }
                     });
                 }
+                stopSort = sorting = false;
                 SafeInvoke(() =>
                 {
-                    sorting = false;
+                    SetEnabledSorting(true);
                 });
-
             });
         }
 
@@ -810,7 +839,7 @@ namespace DiplomPonomarev
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
-            RemoveRecAsync();
+            RemoveRecsAsync();
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
@@ -818,13 +847,29 @@ namespace DiplomPonomarev
             RefreshRecsAsync();
         }
 
+        public void SetEnabledSorting(bool param)
+        {
+            cmbDestPush.Enabled = param;
+            btnPush.Enabled = param;
+            cmbDestPop.Enabled = param;
+            btnPop.Enabled = param;
+            btnRandomize.Enabled = param;
+            cmbStructType.Enabled = param;
+            cmbSortType.Enabled = param;
+            btnSortAsc.Enabled = param;
+            btnSortDesc.Enabled = param;
+            btnStopSort.Enabled = !param;
+        }
+
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
+            SetEnabledSorting(false);
             VisualSortBubble();
         }
 
         private void btnSortDesc_Click(object sender, EventArgs e)
         {
+            SetEnabledSorting(false);
             VisualSortBubble(false);
         }
 
@@ -881,6 +926,9 @@ namespace DiplomPonomarev
                 cmbDestPop.SelectedIndex = 0;
                 cmbDestPush.Enabled = false;
                 cmbDestPop.Enabled = false;
+                miPushHead.Checked = miPopHead.Checked = true;
+                miPushTail.Checked = miPopTail.Checked = false;
+                miPushHead.Enabled = miPushTail.Enabled = miPopHead.Enabled = miPopTail.Enabled = false;
             }
             else if (structType == StructType.Queue)
             {
@@ -888,22 +936,120 @@ namespace DiplomPonomarev
                 cmbDestPop.SelectedIndex = 0;
                 cmbDestPush.Enabled = false;
                 cmbDestPop.Enabled = false;
+                miPushHead.Checked = miPopTail.Checked = false;
+                miPushTail.Checked = miPopHead.Checked = true;
+                miPushHead.Enabled = miPushTail.Enabled = miPopHead.Enabled = miPopTail.Enabled = false;
             }
             else
             {
                 cmbDestPush.Enabled = true;
                 cmbDestPop.Enabled = true;
+                miPushHead.Enabled = miPushTail.Enabled = miPopHead.Enabled = miPopTail.Enabled = true;
             }
+        }
+
+        private void miPushHead_Click(object sender, EventArgs e)
+        {
+            cmbDestPush.SelectedIndex = 0;
+        }
+        private void miPushTail_Click(object sender, EventArgs e)
+        {
+            cmbDestPush.SelectedIndex = 1;
+        }
+
+        private void miPopHead_Click(object sender, EventArgs e)
+        {
+            cmbDestPop.SelectedIndex = 0;
+        }
+
+        private void miPopTail_Click(object sender, EventArgs e)
+        {
+            cmbDestPop.SelectedIndex = 1;
         }
 
         private void cmbDestPush_SelectedIndexChanged(object sender, EventArgs e)
         {
             pushTail = cmbDestPush.SelectedIndex != 0;
+            miPushHead.Checked = !pushTail;
+            miPushTail.Checked = pushTail;
         }
 
         private void cmbDestPop_SelectedIndexChanged(object sender, EventArgs e)
         {
             popHead = cmbDestPop.SelectedIndex == 0;
+            miPopHead.Checked = popHead;
+            miPopTail.Checked = !popHead;
+        }
+
+        private void btnStopSort_Click(object sender, EventArgs e)
+        {
+            stopSort = true;
+        }
+
+        private void вихідToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Windows.Forms.Application.Exit();
+        }
+
+        private void miAmount_CheckedChanged(object sender, EventArgs e)
+        {
+            autoAmount = miAmount.Checked;
+        }
+
+        private void miValue_CheckedChanged(object sender, EventArgs e)
+        {
+            randomValue = miValue.Checked;
+        }
+
+        private void tbAmount_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void tbValue_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        void tbAmount_LostFocus(object sender, EventArgs e)
+        {
+            if (!miAmount.Checked && int.Parse(tbAmount.Text) < 1) tbAmount.Text = 1 + ""; 
+        }
+
+        void tbValue_LostFocus(object sender, EventArgs e)
+        {
+            if (!miValue.Checked && int.Parse(tbValue.Text) < 7) tbValue.Text = 7 + ""; 
+        }
+
+        private void tbAmount_TextChanged(object sender, EventArgs e)
+        {
+            miAmount.Checked = tbAmount.Text.Length == 0;
+        }
+
+        private void tbValue_TextChanged(object sender, EventArgs e)
+        {
+            miValue.Checked = tbValue.Text.Length == 0;
+        }
+
+        private void miPush_Click(object sender, EventArgs e)
+        {
+            AddRecsAsync();
+        }
+
+        private void miPop_Click(object sender, EventArgs e)
+        {
+            RemoveRecsAsync();
+        }
+
+        private void miRandomize_Click(object sender, EventArgs e)
+        {
+            RefreshRecsAsync();
         }
     }
 }

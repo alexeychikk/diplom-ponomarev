@@ -36,38 +36,56 @@ namespace DiplomPonomarev
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPush = new System.Windows.Forms.ToolStripMenuItem();
+            this.вставитиВToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPushHead = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPushTail = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.miPop = new System.Windows.Forms.ToolStripMenuItem();
+            this.видалитиЗToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPopHead = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPopTail = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAmount = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbAmount = new System.Windows.Forms.ToolStripTextBox();
+            this.значенняToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miValue = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbValue = new System.Windows.Forms.ToolStripTextBox();
+            this.miRandomize = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.вихідToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.структураToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.сортуванняToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.анімаціяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
             this.cmbDestPush = new System.Windows.Forms.ToolStripComboBox();
-            this.btnAddElements = new System.Windows.Forms.ToolStripButton();
-            this.btnRemoveElements = new System.Windows.Forms.ToolStripButton();
+            this.btnPush = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabel5 = new System.Windows.Forms.ToolStripLabel();
+            this.cmbDestPop = new System.Windows.Forms.ToolStripComboBox();
+            this.btnPop = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.btnRandomize = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnSortAsc = new System.Windows.Forms.ToolStripButton();
-            this.btnStopSort = new System.Windows.Forms.ToolStripButton();
-            this.btnSortDesc = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.cmbStructType = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.cmbSortType = new System.Windows.Forms.ToolStripComboBox();
+            this.btnSortAsc = new System.Windows.Forms.ToolStripButton();
+            this.btnStopSort = new System.Windows.Forms.ToolStripButton();
+            this.btnSortDesc = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.lblSpeed = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.pnlDevice = new System.Windows.Forms.Panel();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.graphicsComponent = new GraphicsComponent.GraphicsComponent();
-            this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripLabel5 = new System.Windows.Forms.ToolStripLabel();
-            this.cmbDestPop = new System.Windows.Forms.ToolStripComboBox();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlDevice.SuspendLayout();
@@ -88,9 +106,172 @@ namespace DiplomPonomarev
             // 
             // файлToolStripMenuItem
             // 
+            this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miPush,
+            this.вставитиВToolStripMenuItem,
+            this.toolStripSeparator7,
+            this.miPop,
+            this.видалитиЗToolStripMenuItem,
+            this.toolStripSeparator8,
+            this.toolStripMenuItem1,
+            this.значенняToolStripMenuItem,
+            this.miRandomize,
+            this.toolStripSeparator9,
+            this.вихідToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
             this.файлToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.файлToolStripMenuItem.Text = "Файл";
+            // 
+            // miPush
+            // 
+            this.miPush.Name = "miPush";
+            this.miPush.Size = new System.Drawing.Size(190, 22);
+            this.miPush.Text = "Вставити елемент(и)";
+            this.miPush.Click += new System.EventHandler(this.miPush_Click);
+            // 
+            // вставитиВToolStripMenuItem
+            // 
+            this.вставитиВToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miPushHead,
+            this.miPushTail});
+            this.вставитиВToolStripMenuItem.Name = "вставитиВToolStripMenuItem";
+            this.вставитиВToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.вставитиВToolStripMenuItem.Text = "Вставити в";
+            // 
+            // miPushHead
+            // 
+            this.miPushHead.Checked = true;
+            this.miPushHead.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miPushHead.Enabled = false;
+            this.miPushHead.Name = "miPushHead";
+            this.miPushHead.Size = new System.Drawing.Size(152, 22);
+            this.miPushHead.Text = "head";
+            this.miPushHead.Click += new System.EventHandler(this.miPushHead_Click);
+            // 
+            // miPushTail
+            // 
+            this.miPushTail.Enabled = false;
+            this.miPushTail.Name = "miPushTail";
+            this.miPushTail.Size = new System.Drawing.Size(152, 22);
+            this.miPushTail.Text = "tail";
+            this.miPushTail.Click += new System.EventHandler(this.miPushTail_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(187, 6);
+            // 
+            // miPop
+            // 
+            this.miPop.Name = "miPop";
+            this.miPop.Size = new System.Drawing.Size(190, 22);
+            this.miPop.Text = "Видалити елемент(и)";
+            this.miPop.Click += new System.EventHandler(this.miPop_Click);
+            // 
+            // видалитиЗToolStripMenuItem
+            // 
+            this.видалитиЗToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miPopHead,
+            this.miPopTail});
+            this.видалитиЗToolStripMenuItem.Name = "видалитиЗToolStripMenuItem";
+            this.видалитиЗToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.видалитиЗToolStripMenuItem.Text = "Видалити з";
+            // 
+            // miPopHead
+            // 
+            this.miPopHead.Checked = true;
+            this.miPopHead.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miPopHead.Enabled = false;
+            this.miPopHead.Name = "miPopHead";
+            this.miPopHead.Size = new System.Drawing.Size(152, 22);
+            this.miPopHead.Text = "head";
+            this.miPopHead.Click += new System.EventHandler(this.miPopHead_Click);
+            // 
+            // miPopTail
+            // 
+            this.miPopTail.Enabled = false;
+            this.miPopTail.Name = "miPopTail";
+            this.miPopTail.Size = new System.Drawing.Size(152, 22);
+            this.miPopTail.Text = "tail";
+            this.miPopTail.Click += new System.EventHandler(this.miPopTail_Click);
+            // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(187, 6);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miAmount,
+            this.tbAmount});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(190, 22);
+            this.toolStripMenuItem1.Text = "Кількість";
+            // 
+            // miAmount
+            // 
+            this.miAmount.Checked = true;
+            this.miAmount.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miAmount.Name = "miAmount";
+            this.miAmount.Size = new System.Drawing.Size(160, 22);
+            this.miAmount.Text = "Автоматично";
+            this.miAmount.CheckedChanged += new System.EventHandler(this.miAmount_CheckedChanged);
+            // 
+            // tbAmount
+            // 
+            this.tbAmount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbAmount.MaxLength = 2;
+            this.tbAmount.Name = "tbAmount";
+            this.tbAmount.Size = new System.Drawing.Size(100, 23);
+            this.tbAmount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbAmount_KeyPress);
+            this.tbAmount.TextChanged += new System.EventHandler(this.tbAmount_TextChanged);
+            // 
+            // значенняToolStripMenuItem
+            // 
+            this.значенняToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miValue,
+            this.tbValue});
+            this.значенняToolStripMenuItem.Name = "значенняToolStripMenuItem";
+            this.значенняToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.значенняToolStripMenuItem.Text = "Значення";
+            // 
+            // miValue
+            // 
+            this.miValue.Checked = true;
+            this.miValue.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miValue.Name = "miValue";
+            this.miValue.Size = new System.Drawing.Size(160, 22);
+            this.miValue.Text = "Випадково";
+            this.miValue.CheckedChanged += new System.EventHandler(this.miValue_CheckedChanged);
+            // 
+            // tbValue
+            // 
+            this.tbValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbValue.MaxLength = 2;
+            this.tbValue.Name = "tbValue";
+            this.tbValue.Size = new System.Drawing.Size(100, 23);
+            this.tbValue.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbValue_KeyPress);
+            this.tbValue.TextChanged += new System.EventHandler(this.tbValue_TextChanged);
+            // 
+            // miRandomize
+            // 
+            this.miRandomize.Name = "miRandomize";
+            this.miRandomize.Size = new System.Drawing.Size(190, 22);
+            this.miRandomize.Text = "Оновити випадково";
+            this.miRandomize.Click += new System.EventHandler(this.miRandomize_Click);
+            // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(187, 6);
+            // 
+            // вихідToolStripMenuItem
+            // 
+            this.вихідToolStripMenuItem.Name = "вихідToolStripMenuItem";
+            this.вихідToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.вихідToolStripMenuItem.Text = "Вихід";
+            this.вихідToolStripMenuItem.Click += new System.EventHandler(this.вихідToolStripMenuItem_Click);
             // 
             // структураToolStripMenuItem
             // 
@@ -115,15 +296,14 @@ namespace DiplomPonomarev
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel4,
             this.cmbDestPush,
-            this.btnAddElements,
+            this.btnPush,
             this.toolStripSeparator6,
             this.toolStripLabel5,
             this.cmbDestPop,
-            this.btnRemoveElements,
+            this.btnPop,
             this.toolStripSeparator5,
             this.btnRandomize,
             this.toolStripSeparator1,
-            this.toolStripSeparator2,
             this.toolStripLabel2,
             this.cmbStructType,
             this.toolStripSeparator3,
@@ -143,6 +323,12 @@ namespace DiplomPonomarev
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // toolStripLabel4
+            // 
+            this.toolStripLabel4.Name = "toolStripLabel4";
+            this.toolStripLabel4.Size = new System.Drawing.Size(68, 22);
+            this.toolStripLabel4.Text = "Вставити в:";
+            // 
             // cmbDestPush
             // 
             this.cmbDestPush.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -151,28 +337,50 @@ namespace DiplomPonomarev
             "tail"});
             this.cmbDestPush.Name = "cmbDestPush";
             this.cmbDestPush.Size = new System.Drawing.Size(75, 25);
-            this.cmbDestPush.Text = "head";
             this.cmbDestPush.SelectedIndexChanged += new System.EventHandler(this.cmbDestPush_SelectedIndexChanged);
             // 
-            // btnAddElements
+            // btnPush
             // 
-            this.btnAddElements.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnAddElements.Image = ((System.Drawing.Image)(resources.GetObject("btnAddElements.Image")));
-            this.btnAddElements.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAddElements.Name = "btnAddElements";
-            this.btnAddElements.Size = new System.Drawing.Size(23, 22);
-            this.btnAddElements.Text = "toolStripButton1";
-            this.btnAddElements.Click += new System.EventHandler(this.toolStripButton1_Click);
+            this.btnPush.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnPush.Image = ((System.Drawing.Image)(resources.GetObject("btnPush.Image")));
+            this.btnPush.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPush.Name = "btnPush";
+            this.btnPush.Size = new System.Drawing.Size(23, 22);
+            this.btnPush.Text = "toolStripButton1";
+            this.btnPush.ToolTipText = "Вставити елементи";
+            this.btnPush.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
-            // btnRemoveElements
+            // toolStripSeparator6
             // 
-            this.btnRemoveElements.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnRemoveElements.Image = ((System.Drawing.Image)(resources.GetObject("btnRemoveElements.Image")));
-            this.btnRemoveElements.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnRemoveElements.Name = "btnRemoveElements";
-            this.btnRemoveElements.Size = new System.Drawing.Size(23, 22);
-            this.btnRemoveElements.Text = "toolStripButton2";
-            this.btnRemoveElements.Click += new System.EventHandler(this.toolStripButton2_Click);
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripLabel5
+            // 
+            this.toolStripLabel5.Name = "toolStripLabel5";
+            this.toolStripLabel5.Size = new System.Drawing.Size(70, 22);
+            this.toolStripLabel5.Text = "Видалити з:";
+            // 
+            // cmbDestPop
+            // 
+            this.cmbDestPop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbDestPop.Items.AddRange(new object[] {
+            "head",
+            "tail"});
+            this.cmbDestPop.Name = "cmbDestPop";
+            this.cmbDestPop.Size = new System.Drawing.Size(75, 25);
+            this.cmbDestPop.SelectedIndexChanged += new System.EventHandler(this.cmbDestPop_SelectedIndexChanged);
+            // 
+            // btnPop
+            // 
+            this.btnPop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnPop.Image = ((System.Drawing.Image)(resources.GetObject("btnPop.Image")));
+            this.btnPop.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPop.Name = "btnPop";
+            this.btnPop.Size = new System.Drawing.Size(23, 22);
+            this.btnPop.Text = "toolStripButton2";
+            this.btnPop.ToolTipText = "Видалити елементи";
+            this.btnPop.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
             // toolStripSeparator5
             // 
@@ -187,46 +395,13 @@ namespace DiplomPonomarev
             this.btnRandomize.Name = "btnRandomize";
             this.btnRandomize.Size = new System.Drawing.Size(23, 22);
             this.btnRandomize.Text = "toolStripButton3";
+            this.btnRandomize.ToolTipText = "Оновити випадковими значеннями";
             this.btnRandomize.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // btnSortAsc
-            // 
-            this.btnSortAsc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnSortAsc.Image = ((System.Drawing.Image)(resources.GetObject("btnSortAsc.Image")));
-            this.btnSortAsc.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnSortAsc.Name = "btnSortAsc";
-            this.btnSortAsc.Size = new System.Drawing.Size(23, 22);
-            this.btnSortAsc.Text = "toolStripButton4";
-            this.btnSortAsc.Click += new System.EventHandler(this.toolStripButton4_Click);
-            // 
-            // btnStopSort
-            // 
-            this.btnStopSort.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnStopSort.Image = ((System.Drawing.Image)(resources.GetObject("btnStopSort.Image")));
-            this.btnStopSort.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnStopSort.Name = "btnStopSort";
-            this.btnStopSort.Size = new System.Drawing.Size(23, 22);
-            this.btnStopSort.Text = "toolStripButton1";
-            // 
-            // btnSortDesc
-            // 
-            this.btnSortDesc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnSortDesc.Image = ((System.Drawing.Image)(resources.GetObject("btnSortDesc.Image")));
-            this.btnSortDesc.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnSortDesc.Name = "btnSortDesc";
-            this.btnSortDesc.Size = new System.Drawing.Size(23, 22);
-            this.btnSortDesc.Text = "toolStripButton5";
-            this.btnSortDesc.Click += new System.EventHandler(this.btnSortDesc_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // toolStripLabel2
             // 
@@ -266,6 +441,40 @@ namespace DiplomPonomarev
             this.cmbSortType.Name = "cmbSortType";
             this.cmbSortType.Size = new System.Drawing.Size(110, 25);
             // 
+            // btnSortAsc
+            // 
+            this.btnSortAsc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnSortAsc.Image = ((System.Drawing.Image)(resources.GetObject("btnSortAsc.Image")));
+            this.btnSortAsc.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSortAsc.Name = "btnSortAsc";
+            this.btnSortAsc.Size = new System.Drawing.Size(23, 22);
+            this.btnSortAsc.Text = "toolStripButton4";
+            this.btnSortAsc.ToolTipText = "Сортувати за зростанням";
+            this.btnSortAsc.Click += new System.EventHandler(this.toolStripButton4_Click);
+            // 
+            // btnStopSort
+            // 
+            this.btnStopSort.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnStopSort.Enabled = false;
+            this.btnStopSort.Image = ((System.Drawing.Image)(resources.GetObject("btnStopSort.Image")));
+            this.btnStopSort.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnStopSort.Name = "btnStopSort";
+            this.btnStopSort.Size = new System.Drawing.Size(23, 22);
+            this.btnStopSort.Text = "toolStripButton1";
+            this.btnStopSort.ToolTipText = "Зупинити сортування";
+            this.btnStopSort.Click += new System.EventHandler(this.btnStopSort_Click);
+            // 
+            // btnSortDesc
+            // 
+            this.btnSortDesc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnSortDesc.Image = ((System.Drawing.Image)(resources.GetObject("btnSortDesc.Image")));
+            this.btnSortDesc.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSortDesc.Name = "btnSortDesc";
+            this.btnSortDesc.Size = new System.Drawing.Size(23, 22);
+            this.btnSortDesc.Text = "toolStripButton5";
+            this.btnSortDesc.ToolTipText = "Сортувати за спаданням";
+            this.btnSortDesc.Click += new System.EventHandler(this.btnSortDesc_Click);
+            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
@@ -285,6 +494,7 @@ namespace DiplomPonomarev
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton2.Text = "toolStripButton2";
+            this.toolStripButton2.ToolTipText = "Зменшити швидкість анімації";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click_1);
             // 
             // lblSpeed
@@ -302,6 +512,7 @@ namespace DiplomPonomarev
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton3.Text = "toolStripButton3";
+            this.toolStripButton3.ToolTipText = "Збільшити швидкість анімації";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click_1);
             // 
             // pnlDevice
@@ -315,14 +526,6 @@ namespace DiplomPonomarev
             this.pnlDevice.Size = new System.Drawing.Size(984, 387);
             this.pnlDevice.TabIndex = 2;
             // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 439);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(984, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
             // elementHost1
             // 
             this.elementHost1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -335,32 +538,13 @@ namespace DiplomPonomarev
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = this.graphicsComponent;
             // 
-            // toolStripLabel4
+            // statusStrip1
             // 
-            this.toolStripLabel4.Name = "toolStripLabel4";
-            this.toolStripLabel4.Size = new System.Drawing.Size(68, 22);
-            this.toolStripLabel4.Text = "Вставити в:";
-            // 
-            // toolStripLabel5
-            // 
-            this.toolStripLabel5.Name = "toolStripLabel5";
-            this.toolStripLabel5.Size = new System.Drawing.Size(70, 22);
-            this.toolStripLabel5.Text = "Видалити з:";
-            // 
-            // cmbDestPop
-            // 
-            this.cmbDestPop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDestPop.Items.AddRange(new object[] {
-            "head",
-            "tail"});
-            this.cmbDestPop.Name = "cmbDestPop";
-            this.cmbDestPop.Size = new System.Drawing.Size(75, 25);
-            this.cmbDestPop.SelectedIndexChanged += new System.EventHandler(this.cmbDestPop_SelectedIndexChanged);
-            // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 439);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(984, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
             // 
             // Form1
             // 
@@ -392,16 +576,15 @@ namespace DiplomPonomarev
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem файлToolStripMenuItem;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton btnAddElements;
+        private System.Windows.Forms.ToolStripButton btnPush;
         private System.Windows.Forms.Panel pnlDevice;
         private System.Windows.Forms.Integration.ElementHost elementHost1;
         private GraphicsComponent.GraphicsComponent graphicsComponent;
-        private System.Windows.Forms.ToolStripButton btnRemoveElements;
+        private System.Windows.Forms.ToolStripButton btnPop;
         private System.Windows.Forms.ToolStripButton btnRandomize;
         private System.Windows.Forms.ToolStripButton btnSortAsc;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSortDesc;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripComboBox cmbStructType;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripComboBox cmbSortType;
@@ -423,6 +606,25 @@ namespace DiplomPonomarev
         private ToolStripSeparator toolStripSeparator6;
         private ToolStripLabel toolStripLabel5;
         private ToolStripComboBox cmbDestPop;
+        private ToolStripMenuItem miPush;
+        private ToolStripMenuItem вставитиВToolStripMenuItem;
+        private ToolStripMenuItem miPushHead;
+        private ToolStripMenuItem miPushTail;
+        private ToolStripSeparator toolStripSeparator7;
+        private ToolStripMenuItem miPop;
+        private ToolStripMenuItem видалитиЗToolStripMenuItem;
+        private ToolStripMenuItem miPopHead;
+        private ToolStripMenuItem miPopTail;
+        private ToolStripSeparator toolStripSeparator8;
+        private ToolStripMenuItem toolStripMenuItem1;
+        private ToolStripMenuItem miAmount;
+        private ToolStripTextBox tbAmount;
+        private ToolStripMenuItem значенняToolStripMenuItem;
+        private ToolStripMenuItem miValue;
+        private ToolStripTextBox tbValue;
+        private ToolStripSeparator toolStripSeparator9;
+        private ToolStripMenuItem вихідToolStripMenuItem;
+        private ToolStripMenuItem miRandomize;
 
     }
 }
