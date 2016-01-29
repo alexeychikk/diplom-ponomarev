@@ -19,11 +19,13 @@ namespace GraphicsComponent
     public partial class GraphicsComponent : UserControl
     {
         public Storyboard storybAppear;
+        public Storyboard storybDisappear;
         public Storyboard storybRefresh;
         public Storyboard storybTransform;
         public Storyboard storybSwap;
         public Storyboard storybRemove;
-        public Storyboard storybMove;
+        public Storyboard storybMoveLeft;
+        public Storyboard storybMoveTop;
 
         public GraphicsComponent()
         {

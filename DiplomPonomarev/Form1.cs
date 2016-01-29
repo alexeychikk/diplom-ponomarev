@@ -34,6 +34,7 @@ namespace DiplomPonomarev
         public double offsetNum = 4;
         public double offsetIndex = 2;
         public double offsetCircle = 15;
+        public double offsetLabel = 4;
         public double recRadius = 2;
         public double animSpeed = 1;
         public double animSpeedMin = 0.3;
@@ -56,6 +57,7 @@ namespace DiplomPonomarev
         List<VisualRec> recs = new List<VisualRec>();
 
         DoubleAnimation animAppearOpacity;
+        DoubleAnimation animDisappearOpacity;
         ColorAnimation animRefreshColor;
         DoubleAnimation animRemoveOpacity;
         ColorAnimation animRemoveColor;
@@ -65,6 +67,7 @@ namespace DiplomPonomarev
         DoubleAnimation animTransformTop;
         DoubleAnimation animSwapLeft;
         DoubleAnimation animMoveLeft;
+        DoubleAnimation animMoveTop;
 
         public class VisualRec
         {
@@ -97,11 +100,23 @@ namespace DiplomPonomarev
         public bool randomValue = true;
         public bool autoAmount = true;
 
+        public Border borderHead;
+        public Border borderTail;
+        public TextBlock tbHead;
+        public TextBlock tbTail;
+
+        public bool showTail { get { return structType != StructType.Stack; } }
+
         public Form1()
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
-            
+
+            canvas = this.graphicsComponent.canvasGraphics;
+            canvas.Focusable = true;
+            canvas.MouseWheel += canvas_MouseWheel;
+            canvas.MouseEnter += canvas_MouseEnter;
+
             cmbStructType.SelectedIndex = 0;
             cmbSortType.SelectedIndex = 0;
             cmbDestPush.SelectedIndex = 0;
@@ -117,22 +132,28 @@ namespace DiplomPonomarev
             AddRecsAsync().ContinueWith(task =>
             {
                 addRecsCount = removeRecsCount = recsPerAction = recs.Count / 8;
+            }).ContinueWith(task =>
+            {
+                SafeInvoke(() =>
+                {
+                    CreateHeadTail();
+                });
+            }).ContinueWith(task =>
+            {
+                AlignHeadTail();
             });
         }
 
         void InitAnimations()
         {
-            canvas = this.graphicsComponent.canvasGraphics;
-            canvas.Focusable = true;
-            canvas.MouseWheel += canvas_MouseWheel;
-            canvas.MouseEnter += canvas_MouseEnter;
-
             graphicsComponent.storybAppear = new Storyboard();
+            graphicsComponent.storybDisappear = new Storyboard();
             graphicsComponent.storybRefresh = new Storyboard();
             graphicsComponent.storybTransform = new Storyboard();
             graphicsComponent.storybSwap = new Storyboard();
             graphicsComponent.storybRemove = new Storyboard();
-            graphicsComponent.storybMove = new Storyboard();
+            graphicsComponent.storybMoveLeft = new Storyboard();
+            graphicsComponent.storybMoveTop = new Storyboard();
 
             graphicsComponent.storybTransform.Completed += storybTransform_Completed;
             graphicsComponent.storybSwap.Completed += storybSwap_Completed;
@@ -143,6 +164,12 @@ namespace DiplomPonomarev
             animAppearOpacity.To = 1.0;
             animAppearOpacity.Duration = TimeSpan.FromMilliseconds(600);
             Storyboard.SetTargetProperty(animAppearOpacity, new PropertyPath(Rectangle.OpacityProperty));
+
+            animDisappearOpacity = new DoubleAnimation();
+            animDisappearOpacity.From = 1.0;
+            animDisappearOpacity.To = 0.0;
+            animDisappearOpacity.Duration = TimeSpan.FromMilliseconds(600);
+            Storyboard.SetTargetProperty(animDisappearOpacity, new PropertyPath(Rectangle.OpacityProperty));
 
             animRefreshColor = new ColorAnimation();
             animRefreshColor.From = Colors.Yellow;
@@ -187,7 +214,12 @@ namespace DiplomPonomarev
             Storyboard.SetTargetProperty(animMoveLeft, new PropertyPath(Canvas.LeftProperty));
             animMoveLeft.Duration = TimeSpan.FromMilliseconds(400);
 
+            animMoveTop = new DoubleAnimation();
+            Storyboard.SetTargetProperty(animMoveTop, new PropertyPath(Canvas.TopProperty));
+            animMoveTop.Duration = TimeSpan.FromMilliseconds(400);
+
             graphicsComponent.storybAppear.Children.Add(animAppearOpacity);
+            graphicsComponent.storybDisappear.Children.Add(animDisappearOpacity);
             graphicsComponent.storybRefresh.Children.Add(animRefreshColor);
             graphicsComponent.storybTransform.Children.Add(animTransformHeight);
             graphicsComponent.storybTransform.Children.Add(animTransformRadiusX);
@@ -196,7 +228,167 @@ namespace DiplomPonomarev
             graphicsComponent.storybSwap.Children.Add(animSwapLeft);
             graphicsComponent.storybRemove.Children.Add(animRemoveColor);
             graphicsComponent.storybRemove.Children.Add(animRemoveOpacity);
-            graphicsComponent.storybMove.Children.Add(animMoveLeft);
+            graphicsComponent.storybMoveLeft.Children.Add(animMoveLeft);
+            graphicsComponent.storybMoveTop.Children.Add(animMoveTop);
+        }
+
+        void CreateHeadTail()
+        {
+            borderHead = new Border();
+            borderHead.Padding = new Thickness(2);
+            borderHead.BorderThickness = new Thickness(1);
+            borderHead.BorderBrush = Brushes.Green;
+            borderHead.Background = Brushes.Green;
+            borderHead.CornerRadius = new CornerRadius(2);
+            borderHead.Opacity = 0;
+            borderHead.Width = recWidth;
+
+            tbHead = new TextBlock();
+            tbHead.Text = "head";
+            tbHead.Foreground = Brushes.White;
+            tbHead.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            tbHead.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+
+            borderHead.Child = tbHead;
+            canvas.Children.Add(borderHead);
+            borderHead.Measure(new Size());
+            borderHead.Arrange(new Rect());
+            Canvas.SetTop(borderHead, Canvas.GetTop(recs.First().rec) - borderHead.ActualHeight - tbHead.ActualHeight - offsetLabel);
+            Canvas.SetLeft(borderHead, Canvas.GetLeft(recs.First().rec));
+            Canvas.SetZIndex(borderHead, 10001);
+            Storyboard.SetTarget(animAppearOpacity, borderHead);
+            graphicsComponent.storybAppear.Begin(graphicsComponent);
+
+            borderTail = new Border();
+            borderTail.Padding = new Thickness(2);
+            borderTail.BorderThickness = new Thickness(1);
+            borderTail.BorderBrush = Brushes.OrangeRed;
+            borderTail.Background = Brushes.OrangeRed;
+            borderTail.CornerRadius = new CornerRadius(2);
+            borderTail.Opacity = 0;
+            borderTail.Width = recWidth;
+
+            tbTail = new TextBlock();
+            tbTail.Text = "tail";
+            tbTail.Foreground = Brushes.White;
+            tbTail.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            tbTail.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+
+            borderTail.Child = tbTail;
+            canvas.Children.Add(borderTail);
+            borderTail.Measure(new Size());
+            borderTail.Arrange(new Rect());
+            Canvas.SetTop(borderTail, Canvas.GetTop(recs.Last().rec) - borderTail.ActualHeight - tbTail.ActualHeight - offsetLabel);
+            Canvas.SetLeft(borderTail, Canvas.GetLeft(recs.Last().rec));
+            Canvas.SetZIndex(borderTail, 10000);
+            Storyboard.SetTarget(animAppearOpacity, borderTail);
+            graphicsComponent.storybAppear.Begin(graphicsComponent);
+        }
+
+        void AlignHeadTail()
+        {
+            Task.Run(() =>
+            {
+                int recsCountPrev = 0;
+                double topHead = 0, topHeadPrev = 0, topTail = 0, topTailPrev = 0;
+                while (true)
+                {
+                    if (recs.Count > 0)
+                    {
+                        SafeInvoke(() =>
+                        {
+                            topHead = Canvas.GetTop(recs.First().rec);
+                            topTail = Canvas.GetTop(recs.Last().rec);
+                        });
+                    }
+                    if (recsCountPrev != recs.Count)
+                    {
+                        if (recsCountPrev == 0)
+                        {
+                            SafeInvoke(() =>
+                            {
+                                Storyboard.SetTarget(animAppearOpacity, borderHead);
+                                graphicsComponent.storybAppear.Begin(graphicsComponent);
+                                Storyboard.SetTarget(animAppearOpacity, borderTail);
+                                graphicsComponent.storybAppear.Begin(graphicsComponent);
+                            });
+                        }
+                        if (recs.Count == 0)
+                        {
+                            SafeInvoke(() =>
+                            {
+                                Storyboard.SetTarget(animDisappearOpacity, borderHead);
+                                graphicsComponent.storybDisappear.Begin(graphicsComponent);
+                                Storyboard.SetTarget(animDisappearOpacity, borderTail);
+                                graphicsComponent.storybDisappear.Begin(graphicsComponent);
+                            });
+                        }
+                        else if (recs.Count == 1)
+                        {
+                            SafeInvoke(() =>
+                            {
+                                animMoveLeft.To = offsetSides;
+                                Storyboard.SetTarget(animMoveLeft, borderHead);
+                                graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+
+                                animMoveTop.To = topHead - borderHead.ActualHeight - borderTail.ActualHeight - offsetLabel * 2;
+                                Storyboard.SetTarget(animMoveTop, borderHead);
+                                graphicsComponent.storybMoveTop.Begin(graphicsComponent);
+
+                                animMoveLeft.To = offsetSides;
+                                Storyboard.SetTarget(animMoveLeft, borderTail);
+                                graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+
+                                animMoveTop.To = topTail - borderTail.ActualHeight - offsetLabel;
+                                Storyboard.SetTarget(animMoveTop, borderTail);
+                                graphicsComponent.storybMoveTop.Begin(graphicsComponent);
+                            });
+                        }
+                        else
+                        {
+                            SafeInvoke(() =>
+                            {
+                                animMoveTop.To = topHead - borderHead.ActualHeight - offsetLabel;
+                                Storyboard.SetTarget(animMoveTop, borderHead);
+                                graphicsComponent.storybMoveTop.Begin(graphicsComponent);
+
+                                animMoveLeft.To = (recs.Count - 1) * (recWidth + offsetBetween) + offsetSides;
+                                Storyboard.SetTarget(animMoveLeft, borderTail);
+                                graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+
+                                animMoveTop.To = topTail - borderTail.ActualHeight - offsetLabel;
+                                Storyboard.SetTarget(animMoveTop, borderTail);
+                                graphicsComponent.storybMoveTop.Begin(graphicsComponent);
+                            });
+                        }
+                    }
+                    else
+                    {
+                        if ((fullSwapEnd || !animateCircles) && topHead != topHeadPrev)
+                        {
+                            SafeInvoke(() =>
+                            {
+                                animMoveTop.To = topHead - borderHead.ActualHeight - offsetLabel;
+                                Storyboard.SetTarget(animMoveTop, borderHead);
+                                graphicsComponent.storybMoveTop.Begin(graphicsComponent);
+                            });
+                        }
+                        if ((fullSwapEnd || !animateCircles) && topTail != topTailPrev)
+                        {
+                            SafeInvoke(() =>
+                            {
+                                animMoveTop.To = topTail - borderTail.ActualHeight - offsetLabel;
+                                Storyboard.SetTarget(animMoveTop, borderTail);
+                                graphicsComponent.storybMoveTop.Begin(graphicsComponent);
+                            });
+                        }
+                    }
+                    recsCountPrev = recs.Count;
+                    topHeadPrev = topHead;
+                    topTailPrev = topTail;
+                    Thread.Sleep(10);
+                }
+            });
         }
 
         void canvas_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -319,13 +511,13 @@ namespace DiplomPonomarev
                         double xn = (i + 1.0) * (recWidth + offsetBetween) + offsetSides;
                         animMoveLeft.To = xn;
                         Storyboard.SetTarget(animMoveLeft, recs[i].rec);
-                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
                         animMoveLeft.To = xn + recWidth / 2.0 - recs[i].tbNum.ActualWidth / 2.0;
                         Storyboard.SetTarget(animMoveLeft, recs[i].tbNum);
-                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
                         animMoveLeft.To = xn + recWidth / 2.0 - recs[i].tbIndex.ActualWidth / 2.0;
                         Storyboard.SetTarget(animMoveLeft, recs[i].tbIndex);
-                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
                     }
                 }
                 else
@@ -429,13 +621,13 @@ namespace DiplomPonomarev
                         double xn = i * (recWidth + offsetBetween) + offsetSides;
                         animMoveLeft.To = xn;
                         Storyboard.SetTarget(animMoveLeft, recs[i].rec);
-                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
                         animMoveLeft.To = xn + recWidth / 2.0 - recs[i].tbNum.ActualWidth / 2.0;
                         Storyboard.SetTarget(animMoveLeft, recs[i].tbNum);
-                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
                         animMoveLeft.To = xn + recWidth / 2.0 - recs[i].tbIndex.ActualWidth / 2.0;
                         Storyboard.SetTarget(animMoveLeft, recs[i].tbIndex);
-                        graphicsComponent.storybMove.Begin(graphicsComponent);
+                        graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
                     }
                 }
                 removeCounter = 0;
