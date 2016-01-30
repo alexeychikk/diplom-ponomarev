@@ -27,7 +27,7 @@ namespace DiplomPonomarev
         public double scaling = 0.2;
         public int minRecHeight = 7;
         public int maxRecHeight = 100;
-        public double offsetTop = 40;
+        public double offsetTop = 50;
         public double offsetBottom = 60;
         public double offsetSides = 40;
         public double offsetBetween = 4;
@@ -235,9 +235,7 @@ namespace DiplomPonomarev
         void CreateHeadTail()
         {
             borderHead = new Border();
-            borderHead.Padding = new Thickness(2);
-            borderHead.BorderThickness = new Thickness(1);
-            borderHead.BorderBrush = Brushes.Green;
+            borderHead.Padding = new Thickness(0, 2, 0, 2);
             borderHead.Background = Brushes.Green;
             borderHead.CornerRadius = new CornerRadius(2);
             borderHead.Opacity = 0;
@@ -260,9 +258,7 @@ namespace DiplomPonomarev
             graphicsComponent.storybAppear.Begin(graphicsComponent);
 
             borderTail = new Border();
-            borderTail.Padding = new Thickness(2);
-            borderTail.BorderThickness = new Thickness(1);
-            borderTail.BorderBrush = Brushes.OrangeRed;
+            borderTail.Padding = new Thickness(0, 2, 0, 2);
             borderTail.Background = Brushes.OrangeRed;
             borderTail.CornerRadius = new CornerRadius(2);
             borderTail.Opacity = 0;
@@ -281,8 +277,47 @@ namespace DiplomPonomarev
             Canvas.SetTop(borderTail, Canvas.GetTop(recs.Last().rec) - borderTail.ActualHeight - tbTail.ActualHeight - offsetLabel);
             Canvas.SetLeft(borderTail, Canvas.GetLeft(recs.Last().rec));
             Canvas.SetZIndex(borderTail, 10000);
-            Storyboard.SetTarget(animAppearOpacity, borderTail);
-            graphicsComponent.storybAppear.Begin(graphicsComponent);
+            if (showTail)
+            {
+                Storyboard.SetTarget(animAppearOpacity, borderTail);
+                graphicsComponent.storybAppear.Begin(graphicsComponent);
+            }
+        }
+
+        void ShowHead()
+        {
+            SafeInvoke(() =>
+            {
+                Storyboard.SetTarget(animAppearOpacity, borderHead);
+                graphicsComponent.storybAppear.Begin(graphicsComponent);
+            });
+        }
+
+        void HideHead()
+        {
+            SafeInvoke(() =>
+            {
+                Storyboard.SetTarget(animDisappearOpacity, borderHead);
+                graphicsComponent.storybDisappear.Begin(graphicsComponent);
+            });
+        }
+
+        void ShowTail()
+        {
+            SafeInvoke(() =>
+            {
+                Storyboard.SetTarget(animAppearOpacity, borderTail);
+                graphicsComponent.storybAppear.Begin(graphicsComponent);
+            });
+        }
+
+        void HideTail()
+        {
+            SafeInvoke(() =>
+            {
+                Storyboard.SetTarget(animDisappearOpacity, borderTail);
+                graphicsComponent.storybDisappear.Begin(graphicsComponent);
+            });
         }
 
         void AlignHeadTail()
@@ -290,40 +325,31 @@ namespace DiplomPonomarev
             Task.Run(() =>
             {
                 int recsCountPrev = 0;
-                double topHead = 0, topHeadPrev = 0, topTail = 0, topTailPrev = 0;
+                double topHead = 0, topHeadPrev = 0, topTail = 0, topTailPrev = 0, recWidthPrev = 0;
+                StructType structTypePrev = StructType.Stack;
                 while (true)
                 {
                     if (recs.Count > 0)
                     {
+                        VisualRec r1 = recs.First();
+                        VisualRec r2 = recs.Last();
                         SafeInvoke(() =>
                         {
-                            topHead = Canvas.GetTop(recs.First().rec);
-                            topTail = Canvas.GetTop(recs.Last().rec);
+                            if (r1 != null) topHead = Canvas.GetTop(r1.rec);
+                            if (r2 != null) topTail = Canvas.GetTop(r2.rec);
                         });
                     }
-                    if (recsCountPrev != recs.Count)
+                    if (recWidthPrev != recWidth)
                     {
-                        if (recsCountPrev == 0)
+                        SafeInvoke(() =>
                         {
-                            SafeInvoke(() =>
-                            {
-                                Storyboard.SetTarget(animAppearOpacity, borderHead);
-                                graphicsComponent.storybAppear.Begin(graphicsComponent);
-                                Storyboard.SetTarget(animAppearOpacity, borderTail);
-                                graphicsComponent.storybAppear.Begin(graphicsComponent);
-                            });
-                        }
-                        if (recs.Count == 0)
-                        {
-                            SafeInvoke(() =>
-                            {
-                                Storyboard.SetTarget(animDisappearOpacity, borderHead);
-                                graphicsComponent.storybDisappear.Begin(graphicsComponent);
-                                Storyboard.SetTarget(animDisappearOpacity, borderTail);
-                                graphicsComponent.storybDisappear.Begin(graphicsComponent);
-                            });
-                        }
-                        else if (recs.Count == 1)
+                            borderHead.Width = borderTail.Width = recWidth;
+                            recWidthPrev = recWidth;
+                        });
+                    }
+                    if (structTypePrev != structType)
+                    {
+                        if (recs.Count == 1)
                         {
                             SafeInvoke(() =>
                             {
@@ -331,7 +357,51 @@ namespace DiplomPonomarev
                                 Storyboard.SetTarget(animMoveLeft, borderHead);
                                 graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
 
-                                animMoveTop.To = topHead - borderHead.ActualHeight - borderTail.ActualHeight - offsetLabel * 2;
+                                double x = topHead - borderHead.ActualHeight - offsetLabel;
+                                if (structType != StructType.Stack) x -= (borderTail.ActualHeight + offsetLabel);
+                                animMoveTop.To = x;
+                                Storyboard.SetTarget(animMoveTop, borderHead);
+                                graphicsComponent.storybMoveTop.Begin(graphicsComponent);
+
+                                animMoveLeft.To = offsetSides;
+                                Storyboard.SetTarget(animMoveLeft, borderTail);
+                                graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+
+                                animMoveTop.To = topTail - borderTail.ActualHeight - offsetLabel;
+                                Storyboard.SetTarget(animMoveTop, borderTail);
+                                graphicsComponent.storybMoveTop.Begin(graphicsComponent);
+                            });
+                        }
+                        if (recs.Count > 0)
+                        {
+                            if (structType == StructType.Stack) HideTail();
+                            else if (structTypePrev == StructType.Stack) ShowTail();
+                        }
+                        structTypePrev = structType;
+                    }
+                    if (recsCountPrev != recs.Count)
+                    {
+                        if (recsCountPrev == 0)
+                        {
+                            ShowHead();
+                            if (structType != StructType.Stack) ShowTail();
+                        }
+                        if (recs.Count == 0)
+                        {
+                            HideHead();
+                            if (structType != StructType.Stack) HideTail();
+                        }
+                        if (recs.Count == 1)
+                        {
+                            SafeInvoke(() =>
+                            {
+                                animMoveLeft.To = offsetSides;
+                                Storyboard.SetTarget(animMoveLeft, borderHead);
+                                graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+
+                                double x = topHead - borderHead.ActualHeight - offsetLabel;
+                                if (structType != StructType.Stack) x -= (borderTail.ActualHeight + offsetLabel);
+                                animMoveTop.To = x;
                                 Storyboard.SetTarget(animMoveTop, borderHead);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
 
@@ -352,15 +422,28 @@ namespace DiplomPonomarev
                                 Storyboard.SetTarget(animMoveTop, borderHead);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
 
-                                animMoveLeft.To = (recs.Count - 1) * (recWidth + offsetBetween) + offsetSides;
-                                Storyboard.SetTarget(animMoveLeft, borderTail);
-                                graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
-
+                                if (recs.Count < recsCountPrev && CanPopHead())
+                                {
+                                    animMoveLeft.Duration = TimeSpan.FromMilliseconds(800);
+                                    animMoveLeft.BeginTime = TimeSpan.FromMilliseconds(400);
+                                    animMoveLeft.To = (recs.Count - 1) * (recWidth + offsetBetween) + offsetSides;
+                                    Storyboard.SetTarget(animMoveLeft, borderTail);
+                                    graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+                                    animMoveLeft.Duration = TimeSpan.FromMilliseconds(400);
+                                    animMoveLeft.BeginTime = TimeSpan.FromMilliseconds(0);
+                                }
+                                else
+                                {
+                                    animMoveLeft.To = (recs.Count - 1) * (recWidth + offsetBetween) + offsetSides;
+                                    Storyboard.SetTarget(animMoveLeft, borderTail);
+                                    graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+                                }
                                 animMoveTop.To = topTail - borderTail.ActualHeight - offsetLabel;
                                 Storyboard.SetTarget(animMoveTop, borderTail);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
                             });
                         }
+                        recsCountPrev = recs.Count;
                     }
                     else
                     {
@@ -368,6 +451,8 @@ namespace DiplomPonomarev
                         {
                             SafeInvoke(() =>
                             {
+                                double x = topHead - borderHead.ActualHeight - offsetLabel;
+                                if (recs.Count == 1 && structType != StructType.Stack) x -= (borderTail.ActualHeight + offsetLabel);
                                 animMoveTop.To = topHead - borderHead.ActualHeight - offsetLabel;
                                 Storyboard.SetTarget(animMoveTop, borderHead);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
@@ -383,7 +468,6 @@ namespace DiplomPonomarev
                             });
                         }
                     }
-                    recsCountPrev = recs.Count;
                     topHeadPrev = topHead;
                     topTailPrev = topTail;
                     Thread.Sleep(10);
