@@ -344,6 +344,13 @@ namespace DiplomPonomarev
                         SafeInvoke(() =>
                         {
                             borderHead.Width = borderTail.Width = recWidth;
+                            animMoveLeft.Duration = TimeSpan.FromMilliseconds(100);
+                            animMoveLeft.BeginTime = TimeSpan.FromMilliseconds(0);
+                            animMoveLeft.To = (recs.Count - 1) * (recWidth + offsetBetween) + offsetSides;
+                            Storyboard.SetTarget(animMoveLeft, borderTail);
+                            graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+                            animMoveLeft.Duration = TimeSpan.FromMilliseconds(400);
+                            animMoveLeft.BeginTime = TimeSpan.FromMilliseconds(0);
                             recWidthPrev = recWidth;
                         });
                     }
@@ -453,7 +460,7 @@ namespace DiplomPonomarev
                             {
                                 double x = topHead - borderHead.ActualHeight - offsetLabel;
                                 if (recs.Count == 1 && structType != StructType.Stack) x -= (borderTail.ActualHeight + offsetLabel);
-                                animMoveTop.To = topHead - borderHead.ActualHeight - offsetLabel;
+                                animMoveTop.To = x;
                                 Storyboard.SetTarget(animMoveTop, borderHead);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
                             });
@@ -853,7 +860,7 @@ namespace DiplomPonomarev
             }
         }
 
-        public Task RefreshRecsAsync()
+        public Task RefreshRecsAsync() //bug with deleting detected
         {
             return Task.Run(() =>
             {
