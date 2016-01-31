@@ -50,6 +50,7 @@ namespace DiplomPonomarev
         public bool sorting = false;
         public int recsTransforming = 0;
         public int recsSwaping = 0;
+        public int iterationsCount = 0;
         public bool transformingDown;
         public bool fullSwapEnd = true;
         public bool animateCircles = true, animateCirclesStart = false;
@@ -942,6 +943,8 @@ namespace DiplomPonomarev
 
         public Task VisualSortBubble(bool asc = true)
         {
+            iterationsCount = 0;
+            iteratorI.Text = iteratorJ.Text = lblIterations.Text = "0";
             return Task.Run(() =>
             {
                 if (recs.Count < 2)
@@ -956,8 +959,11 @@ namespace DiplomPonomarev
                 VisualRec recjPrev = null, reciPrev = null;
                 for (int i = 0; i < recs.Count - 1; i++)
                 {
+                    iteratorI.Text = i + "";
                     for (int j = i + 1; j < recs.Count; j++)
                     {
+                        iteratorJ.Text = j + "";
+                        lblIterations.Text = "" + iterationsCount++;
                         SafeInvoke(() =>
                         {
                             if (reciPrev != null && reciPrev != recs[i])
@@ -1074,6 +1080,8 @@ namespace DiplomPonomarev
 
         public Task VisualSortInsertion(bool asc = true)
         {
+            iterationsCount = 0;
+            iteratorI.Text = iteratorJ.Text = lblIterations.Text = "0";
             return Task.Run(() =>
             {
                 if (recs.Count < 2)
@@ -1113,8 +1121,12 @@ namespace DiplomPonomarev
                         });
                         while (!fullSwapEnd) { }
                     }
+                    iteratorI.Text = i + "";
+                    lblIterations.Text = "" + iterationsCount++;
                     while (j > 0 && (asc ? cur.num < recs[j - 1].num : cur.num > recs[j - 1].num))
                     {
+                        iteratorJ.Text = j + "";
+                        lblIterations.Text = "" + iterationsCount++;
                         Thread.Sleep((int)(animMSDefualt * animSpeed));
 
                         fullSwapEnd = false;
@@ -1190,6 +1202,8 @@ namespace DiplomPonomarev
 
         public Task VisualSortQuick(bool asc = true)
         {
+            iterationsCount = 0;
+            iteratorI.Text = iteratorJ.Text = lblIterations.Text = "0";
             return Task.Run(() =>
             {
                 if (recs.Count < 2)
@@ -1245,6 +1259,9 @@ namespace DiplomPonomarev
                     recs[j].tbIndex.Inlines.Add(new Bold(runj));
                 });
                 Thread.Sleep((int)(animMSDefualt * animSpeed));
+                iteratorI.Text = i + "";
+                iteratorJ.Text = j + "";
+                lblIterations.Text = "" + iterationsCount++;
                 if (asc ? recs[i].num <= recs[end].num : recs[i].num >= recs[end].num)
                 {
                     if (j != i)
@@ -1316,10 +1333,13 @@ namespace DiplomPonomarev
                     recs[i].tbIndex.Inlines.Clear();
                     recs[i].tbIndex.Text = recs[i].index.ToString();
 
-                    int k = swaped ? j - 1 : j;
-                    recs[k].rec.Fill = Brushes.Black;
-                    recs[k].tbIndex.Inlines.Clear();
-                    recs[k].tbIndex.Text = recs[k].index.ToString();
+                    if (j < recs.Count)
+                    {
+                        int k = swaped ? j - 1 : j;
+                        recs[k].rec.Fill = Brushes.Black;
+                        recs[k].tbIndex.Inlines.Clear();
+                        recs[k].tbIndex.Text = recs[k].index.ToString();
+                    }
                 });
             }
             return j - 1;

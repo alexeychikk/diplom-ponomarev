@@ -101,6 +101,8 @@ namespace DiplomPonomarev
             this.iteratorI = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.iteratorJ = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblIterations = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlDevice.SuspendLayout();
@@ -653,6 +655,8 @@ namespace DiplomPonomarev
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel3,
+            this.lblIterations,
             this.toolStripStatusLabel1,
             this.iteratorI,
             this.toolStripStatusLabel2,
@@ -687,6 +691,19 @@ namespace DiplomPonomarev
             this.iteratorJ.Name = "iteratorJ";
             this.iteratorJ.Size = new System.Drawing.Size(13, 17);
             this.iteratorJ.Text = "0";
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(106, 17);
+            this.toolStripStatusLabel3.Text = "Кількість ітерацій:";
+            // 
+            // lblIterations
+            // 
+            this.lblIterations.Margin = new System.Windows.Forms.Padding(0, 3, 16, 2);
+            this.lblIterations.Name = "lblIterations";
+            this.lblIterations.Size = new System.Drawing.Size(13, 17);
+            this.lblIterations.Text = "0";
             // 
             // Form1
             // 
@@ -785,6 +802,8 @@ namespace DiplomPonomarev
         private ToolStripStatusLabel iteratorI;
         private ToolStripStatusLabel toolStripStatusLabel2;
         private ToolStripStatusLabel iteratorJ;
+        private ToolStripStatusLabel toolStripStatusLabel3;
+        private ToolStripStatusLabel lblIterations;
 
     }
 }
