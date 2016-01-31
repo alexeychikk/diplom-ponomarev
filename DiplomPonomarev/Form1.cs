@@ -1201,116 +1201,9 @@ namespace DiplomPonomarev
                     stopSort = sorting = false;
                 };
                 sorting = true;
-                VisualRec recjPrev = null, reciPrev = null;
-                for (int i = 1; i < recs.Count; i++)
-                {
-                    for (int j = i + 1; j < recs.Count; j++)
-                    {
-                        SafeInvoke(() =>
-                        {
-                            if (reciPrev != null && reciPrev != recs[i])
-                            {
-                                reciPrev.rec.Fill = Brushes.Black;
-                                reciPrev.tbIndex.Inlines.Clear();
-                                reciPrev.tbIndex.Text = reciPrev.index.ToString();
-                            }
-                            recs[i].rec.Fill = Brushes.Blue;
-                            Run runi = new Run(recs[i].tbIndex.Text);
-                            runi.Foreground = Brushes.Blue;
-                            recs[i].tbIndex.Text = "";
-                            recs[i].tbIndex.Inlines.Add(new Bold(runi));
 
-                            if (recjPrev != null)
-                            {
-                                recjPrev.rec.Fill = Brushes.Black;
-                                recjPrev.tbIndex.Inlines.Clear();
-                                recjPrev.tbIndex.Text = recjPrev.index.ToString();
-                            }
-                            recs[j].rec.Fill = Brushes.Red;
-                            Run runj = new Run(recs[j].tbIndex.Text);
-                            runj.Foreground = Brushes.Red;
-                            recs[j].tbIndex.Text = "";
-                            recs[j].tbIndex.Inlines.Add(new Bold(runj));
-                        });
-                        Thread.Sleep((int)(animMSDefualt * animSpeed));
+                QuickSortRecursion(0, recs.Count - 1, asc);
 
-                        if ((asc && recs[j].num < recs[i].num) || (!asc && recs[j].num > recs[i].num))
-                        {
-                            fullSwapEnd = false;
-                            SafeInvoke(() =>
-                            {
-                                VisualRec r = recs[i];
-                                recs[i] = recs[j];
-                                recs[j] = r;
-
-                                TextBlock tb = recs[i].tbIndex;
-                                recs[i].tbIndex = recs[j].tbIndex;
-                                recs[j].tbIndex = tb;
-
-                                int ind = recs[i].index;
-                                recs[i].index = recs[j].index;
-                                recs[j].index = ind;
-
-                                reci = recs[i];
-                                recj = recs[j];
-                                reciHeight = reci.rec.Height;
-                                reciTop = Canvas.GetTop(reci.rec);
-                                recjHeight = recj.rec.Height;
-                                recjTop = Canvas.GetTop(recj.rec);
-
-                                Canvas.SetZIndex(recs[i].rec, 9996);
-                                Canvas.SetZIndex(recs[j].rec, 9997);
-                                Canvas.SetZIndex(recs[i].tbNum, 9998);
-                                Canvas.SetZIndex(recs[j].tbNum, 9999);
-                                if (!animateCircles)
-                                {
-                                    animateCirclesStart = false;
-                                    SwapRecs(recs[i], recs[j]);
-                                }
-                                else
-                                {
-                                    animateCirclesStart = true;
-                                    transformingDown = true;
-                                    TransformRecDown(recs[i]);
-                                    TransformRecDown(recs[j]);
-                                }
-                            });
-                        }
-                        reciPrev = recs[i];
-                        recjPrev = recs[j];
-
-                        while (!fullSwapEnd) { }
-                        if (stopSort)
-                        {
-                            SafeInvoke(() =>
-                            {
-                                UnlockRecs();
-                                SetEnabledSorting(true);
-                            });
-                            stopSort = sorting = false;
-                            return;
-                        }
-                        SafeInvoke(() =>
-                        {
-                            Canvas.SetZIndex(recs[i].rec, 0);
-                            Canvas.SetZIndex(recs[j].rec, 1);
-                            Canvas.SetZIndex(recs[i].tbNum, 2);
-                            Canvas.SetZIndex(recs[j].tbNum, 3);
-                        });
-                    }
-                }
-
-                for (int i = 2; i > -1; i--)
-                {
-                    SafeInvoke(() =>
-                    {
-                        try
-                        {
-                            recs[recs.Count - i - 1].rec.Fill = Brushes.Black;
-                        }
-                        catch { }
-                    });
-                }
                 SafeInvoke(() =>
                 {
                     UnlockRecs();
@@ -1318,6 +1211,118 @@ namespace DiplomPonomarev
                 });
                 stopSort = sorting = false;
             });
+        }
+
+        void QuickSortRecursion(int start, int end, bool asc)
+        {
+            if (start >= end)
+            {
+                return;
+            }
+            int pivot = VisualSortQuickPartition(start, end, asc);
+            QuickSortRecursion(start, pivot - 1, asc);
+            QuickSortRecursion(pivot + 1, end, asc);
+        }
+
+        int VisualSortQuickPartition(int start, int end, bool asc)
+        {
+            int j = start; bool swaped = false;
+            for (int i = start; i <= end; i++)
+            {
+                swaped = false;
+                SafeInvoke(() =>
+                {
+                    recs[i].rec.Fill = Brushes.Blue;
+                    Run runi = new Run(recs[i].tbIndex.Text);
+                    runi.Foreground = Brushes.Blue;
+                    recs[i].tbIndex.Text = "";
+                    recs[i].tbIndex.Inlines.Add(new Bold(runi));
+
+                    recs[j].rec.Fill = Brushes.Red;
+                    Run runj = new Run(recs[j].tbIndex.Text);
+                    runj.Foreground = Brushes.Red;
+                    recs[j].tbIndex.Text = "";
+                    recs[j].tbIndex.Inlines.Add(new Bold(runj));
+                });
+                Thread.Sleep((int)(animMSDefualt * animSpeed));
+                if (asc ? recs[i].num <= recs[end].num : recs[i].num >= recs[end].num)
+                {
+                    if (j != i)
+                    {
+                        swaped = true;
+                        fullSwapEnd = false;
+                        SafeInvoke(() =>
+                        {
+                            VisualRec r = recs[i];
+                            recs[i] = recs[j];
+                            recs[j] = r;
+
+                            TextBlock tb = recs[i].tbIndex;
+                            recs[i].tbIndex = recs[j].tbIndex;
+                            recs[j].tbIndex = tb;
+
+                            int ind = recs[i].index;
+                            recs[i].index = recs[j].index;
+                            recs[j].index = ind;
+
+                            reci = recs[i];
+                            recj = recs[j];
+                            reciHeight = reci.rec.Height;
+                            reciTop = Canvas.GetTop(reci.rec);
+                            recjHeight = recj.rec.Height;
+                            recjTop = Canvas.GetTop(recj.rec);
+
+                            Canvas.SetZIndex(recs[i].rec, 9996);
+                            Canvas.SetZIndex(recs[j].rec, 9997);
+                            Canvas.SetZIndex(recs[i].tbNum, 9998);
+                            Canvas.SetZIndex(recs[j].tbNum, 9999);
+                            if (!animateCircles)
+                            {
+                                animateCirclesStart = false;
+                                SwapRecs(recs[i], recs[j]);
+                            }
+                            else
+                            {
+                                animateCirclesStart = true;
+                                transformingDown = true;
+                                TransformRecDown(recs[i]);
+                                TransformRecDown(recs[j]);
+                            }
+                        });
+                        while (!fullSwapEnd) { }
+                    }
+                    SafeInvoke(() =>
+                    {
+                        Canvas.SetZIndex(recs[i].rec, 0);
+                        Canvas.SetZIndex(recs[j].rec, 1);
+                        Canvas.SetZIndex(recs[i].tbNum, 2);
+                        Canvas.SetZIndex(recs[j].tbNum, 3);
+                    });
+                    if (stopSort)
+                    {
+                        SafeInvoke(() =>
+                        {
+                            UnlockRecs();
+                            SetEnabledSorting(true);
+                        });
+                        stopSort = sorting = false;
+                        Thread.CurrentThread.Abort();
+                    }
+                    j += 1;
+                }
+                SafeInvoke(() =>
+                {
+                    recs[i].rec.Fill = Brushes.Black;
+                    recs[i].tbIndex.Inlines.Clear();
+                    recs[i].tbIndex.Text = recs[i].index.ToString();
+
+                    int k = swaped ? j - 1 : j;
+                    recs[k].rec.Fill = Brushes.Black;
+                    recs[k].tbIndex.Inlines.Clear();
+                    recs[k].tbIndex.Text = recs[k].index.ToString();
+                });
+            }
+            return j - 1;
         }
 
         void storybSwap_Completed(object sender, EventArgs e)
