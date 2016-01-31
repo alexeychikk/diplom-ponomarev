@@ -56,7 +56,19 @@ namespace DiplomPonomarev
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.вихідToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.структураToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miStructStack = new System.Windows.Forms.ToolStripMenuItem();
+            this.miStructQueue = new System.Windows.Forms.ToolStripMenuItem();
+            this.miStructList = new System.Windows.Forms.ToolStripMenuItem();
             this.сортуванняToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortBubble = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortInsertion = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortQuick = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.miSortAsc = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSortDesc = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.miSortStop = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
             this.cmbDestPush = new System.Windows.Forms.ToolStripComboBox();
@@ -85,21 +97,14 @@ namespace DiplomPonomarev
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.graphicsComponent = new GraphicsComponent.GraphicsComponent();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.miStructStack = new System.Windows.Forms.ToolStripMenuItem();
-            this.miStructQueue = new System.Windows.Forms.ToolStripMenuItem();
-            this.miStructList = new System.Windows.Forms.ToolStripMenuItem();
-            this.miSortBubble = new System.Windows.Forms.ToolStripMenuItem();
-            this.miSortInsertion = new System.Windows.Forms.ToolStripMenuItem();
-            this.miSortQuick = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.miSortAsc = new System.Windows.Forms.ToolStripMenuItem();
-            this.miSortDesc = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.miSortStop = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.iteratorI = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.iteratorJ = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlDevice.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -155,7 +160,7 @@ namespace DiplomPonomarev
             this.miPushHead.CheckState = System.Windows.Forms.CheckState.Checked;
             this.miPushHead.Enabled = false;
             this.miPushHead.Name = "miPushHead";
-            this.miPushHead.Size = new System.Drawing.Size(152, 22);
+            this.miPushHead.Size = new System.Drawing.Size(100, 22);
             this.miPushHead.Text = "head";
             this.miPushHead.Click += new System.EventHandler(this.miPushHead_Click);
             // 
@@ -163,7 +168,7 @@ namespace DiplomPonomarev
             // 
             this.miPushTail.Enabled = false;
             this.miPushTail.Name = "miPushTail";
-            this.miPushTail.Size = new System.Drawing.Size(152, 22);
+            this.miPushTail.Size = new System.Drawing.Size(100, 22);
             this.miPushTail.Text = "tail";
             this.miPushTail.Click += new System.EventHandler(this.miPushTail_Click);
             // 
@@ -194,7 +199,7 @@ namespace DiplomPonomarev
             this.miPopHead.CheckState = System.Windows.Forms.CheckState.Checked;
             this.miPopHead.Enabled = false;
             this.miPopHead.Name = "miPopHead";
-            this.miPopHead.Size = new System.Drawing.Size(152, 22);
+            this.miPopHead.Size = new System.Drawing.Size(100, 22);
             this.miPopHead.Text = "head";
             this.miPopHead.Click += new System.EventHandler(this.miPopHead_Click);
             // 
@@ -202,7 +207,7 @@ namespace DiplomPonomarev
             // 
             this.miPopTail.Enabled = false;
             this.miPopTail.Name = "miPopTail";
-            this.miPopTail.Size = new System.Drawing.Size(152, 22);
+            this.miPopTail.Size = new System.Drawing.Size(100, 22);
             this.miPopTail.Text = "tail";
             this.miPopTail.Click += new System.EventHandler(this.miPopTail_Click);
             // 
@@ -294,6 +299,29 @@ namespace DiplomPonomarev
             this.структураToolStripMenuItem.Size = new System.Drawing.Size(75, 20);
             this.структураToolStripMenuItem.Text = "Структура";
             // 
+            // miStructStack
+            // 
+            this.miStructStack.Checked = true;
+            this.miStructStack.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miStructStack.Name = "miStructStack";
+            this.miStructStack.Size = new System.Drawing.Size(115, 22);
+            this.miStructStack.Text = "Стек";
+            this.miStructStack.Click += new System.EventHandler(this.miStructStack_Click);
+            // 
+            // miStructQueue
+            // 
+            this.miStructQueue.Name = "miStructQueue";
+            this.miStructQueue.Size = new System.Drawing.Size(115, 22);
+            this.miStructQueue.Text = "Черга";
+            this.miStructQueue.Click += new System.EventHandler(this.miStructQueue_Click);
+            // 
+            // miStructList
+            // 
+            this.miStructList.Name = "miStructList";
+            this.miStructList.Size = new System.Drawing.Size(115, 22);
+            this.miStructList.Text = "Список";
+            this.miStructList.Click += new System.EventHandler(this.miStructList_Click);
+            // 
             // сортуванняToolStripMenuItem
             // 
             this.сортуванняToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -308,6 +336,71 @@ namespace DiplomPonomarev
             this.сортуванняToolStripMenuItem.Name = "сортуванняToolStripMenuItem";
             this.сортуванняToolStripMenuItem.Size = new System.Drawing.Size(84, 20);
             this.сортуванняToolStripMenuItem.Text = "Сортування";
+            // 
+            // miSortBubble
+            // 
+            this.miSortBubble.Checked = true;
+            this.miSortBubble.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miSortBubble.Name = "miSortBubble";
+            this.miSortBubble.Size = new System.Drawing.Size(155, 22);
+            this.miSortBubble.Text = "Бульбашками";
+            this.miSortBubble.Click += new System.EventHandler(this.miSortBubble_Click);
+            // 
+            // miSortInsertion
+            // 
+            this.miSortInsertion.Name = "miSortInsertion";
+            this.miSortInsertion.Size = new System.Drawing.Size(155, 22);
+            this.miSortInsertion.Text = "Вставками";
+            this.miSortInsertion.Click += new System.EventHandler(this.miSortInsertion_Click);
+            // 
+            // miSortQuick
+            // 
+            this.miSortQuick.Name = "miSortQuick";
+            this.miSortQuick.Size = new System.Drawing.Size(155, 22);
+            this.miSortQuick.Text = "Швидке";
+            this.miSortQuick.Click += new System.EventHandler(this.miSortQuick_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(152, 6);
+            // 
+            // miSortAsc
+            // 
+            this.miSortAsc.Name = "miSortAsc";
+            this.miSortAsc.Size = new System.Drawing.Size(155, 22);
+            this.miSortAsc.Text = "За зростанням";
+            this.miSortAsc.Click += new System.EventHandler(this.miSortAsc_Click);
+            // 
+            // miSortDesc
+            // 
+            this.miSortDesc.Name = "miSortDesc";
+            this.miSortDesc.Size = new System.Drawing.Size(155, 22);
+            this.miSortDesc.Text = "За спаданням";
+            this.miSortDesc.Click += new System.EventHandler(this.miSortDesc_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(152, 6);
+            // 
+            // miSortStop
+            // 
+            this.miSortStop.Enabled = false;
+            this.miSortStop.Name = "miSortStop";
+            this.miSortStop.Size = new System.Drawing.Size(155, 22);
+            this.miSortStop.Text = "Зупинити";
+            this.miSortStop.Click += new System.EventHandler(this.miSortStop_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Z)));
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(12, 20);
+            this.toolStripMenuItem2.Visible = false;
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // toolStrip1
             // 
@@ -559,99 +652,41 @@ namespace DiplomPonomarev
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.iteratorI,
+            this.toolStripStatusLabel2,
+            this.iteratorJ});
             this.statusStrip1.Location = new System.Drawing.Point(0, 439);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(984, 22);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // miStructStack
+            // toolStripStatusLabel1
             // 
-            this.miStructStack.Checked = true;
-            this.miStructStack.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.miStructStack.Name = "miStructStack";
-            this.miStructStack.Size = new System.Drawing.Size(152, 22);
-            this.miStructStack.Text = "Стек";
-            this.miStructStack.Click += new System.EventHandler(this.miStructStack_Click);
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(13, 17);
+            this.toolStripStatusLabel1.Text = "i:";
             // 
-            // miStructQueue
+            // iteratorI
             // 
-            this.miStructQueue.Name = "miStructQueue";
-            this.miStructQueue.Size = new System.Drawing.Size(152, 22);
-            this.miStructQueue.Text = "Черга";
-            this.miStructQueue.Click += new System.EventHandler(this.miStructQueue_Click);
+            this.iteratorI.Name = "iteratorI";
+            this.iteratorI.Size = new System.Drawing.Size(13, 17);
+            this.iteratorI.Text = "0";
             // 
-            // miStructList
+            // toolStripStatusLabel2
             // 
-            this.miStructList.Name = "miStructList";
-            this.miStructList.Size = new System.Drawing.Size(152, 22);
-            this.miStructList.Text = "Список";
-            this.miStructList.Click += new System.EventHandler(this.miStructList_Click);
+            this.toolStripStatusLabel2.Margin = new System.Windows.Forms.Padding(16, 3, 0, 2);
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(13, 17);
+            this.toolStripStatusLabel2.Text = "j:";
             // 
-            // miSortBubble
+            // iteratorJ
             // 
-            this.miSortBubble.Checked = true;
-            this.miSortBubble.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.miSortBubble.Name = "miSortBubble";
-            this.miSortBubble.Size = new System.Drawing.Size(155, 22);
-            this.miSortBubble.Text = "Бульбашками";
-            this.miSortBubble.Click += new System.EventHandler(this.miSortBubble_Click);
-            // 
-            // miSortInsertion
-            // 
-            this.miSortInsertion.Name = "miSortInsertion";
-            this.miSortInsertion.Size = new System.Drawing.Size(155, 22);
-            this.miSortInsertion.Text = "Вставками";
-            this.miSortInsertion.Click += new System.EventHandler(this.miSortInsertion_Click);
-            // 
-            // miSortQuick
-            // 
-            this.miSortQuick.Name = "miSortQuick";
-            this.miSortQuick.Size = new System.Drawing.Size(155, 22);
-            this.miSortQuick.Text = "Швидке";
-            this.miSortQuick.Click += new System.EventHandler(this.miSortQuick_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(152, 6);
-            // 
-            // miSortAsc
-            // 
-            this.miSortAsc.Name = "miSortAsc";
-            this.miSortAsc.Size = new System.Drawing.Size(155, 22);
-            this.miSortAsc.Text = "За зростанням";
-            this.miSortAsc.Click += new System.EventHandler(this.miSortAsc_Click);
-            // 
-            // miSortDesc
-            // 
-            this.miSortDesc.Name = "miSortDesc";
-            this.miSortDesc.Size = new System.Drawing.Size(155, 22);
-            this.miSortDesc.Text = "За спаданням";
-            this.miSortDesc.Click += new System.EventHandler(this.miSortDesc_Click);
-            // 
-            // toolStripSeparator10
-            // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(152, 6);
-            // 
-            // miSortStop
-            // 
-            this.miSortStop.Enabled = false;
-            this.miSortStop.Name = "miSortStop";
-            this.miSortStop.Size = new System.Drawing.Size(155, 22);
-            this.miSortStop.Text = "Зупинити";
-            this.miSortStop.Click += new System.EventHandler(this.miSortStop_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.Z)));
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(12, 20);
-            this.toolStripMenuItem2.Visible = false;
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            this.iteratorJ.Name = "iteratorJ";
+            this.iteratorJ.Size = new System.Drawing.Size(13, 17);
+            this.iteratorJ.Text = "0";
             // 
             // Form1
             // 
@@ -674,6 +709,8 @@ namespace DiplomPonomarev
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.pnlDevice.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -744,6 +781,10 @@ namespace DiplomPonomarev
         private ToolStripSeparator toolStripSeparator10;
         private ToolStripMenuItem miSortStop;
         private ToolStripMenuItem toolStripMenuItem2;
+        private ToolStripStatusLabel toolStripStatusLabel1;
+        private ToolStripStatusLabel iteratorI;
+        private ToolStripStatusLabel toolStripStatusLabel2;
+        private ToolStripStatusLabel iteratorJ;
 
     }
 }

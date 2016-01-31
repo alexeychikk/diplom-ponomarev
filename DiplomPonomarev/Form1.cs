@@ -158,6 +158,7 @@ namespace DiplomPonomarev
             graphicsComponent.storybTransform.Completed += storybTransform_Completed;
             graphicsComponent.storybSwap.Completed += storybSwap_Completed;
             graphicsComponent.storybRemove.Completed += storybRemove_Completed;
+            graphicsComponent.storybMoveLeft.Completed += storybMoveLeft_Completed;
 
             animAppearOpacity = new DoubleAnimation();
             animAppearOpacity.From = 0.0;
@@ -809,7 +810,7 @@ namespace DiplomPonomarev
             });
         }
 
-        public void UnlockRec(VisualRec vr)
+        public void UnlockRec(VisualRec vr, int index = -1)
         {
             double height = vr.rec.Height, width = vr.rec.Width, x = Canvas.GetLeft(vr.rec), y = Canvas.GetTop(vr.rec);
 
@@ -831,7 +832,7 @@ namespace DiplomPonomarev
             tbIndex.Foreground = Brushes.Gray;
             tbIndex.Width = Double.NaN;
             tbIndex.Height = Double.NaN;
-            tbIndex.Text = vr.tbIndex.Text;
+            tbIndex.Text = index == -1 ? vr.tbIndex.Text : index + "";
 
             canvas.Children.Remove(vr.tbNum);
             canvas.Children.Add(tbNum);
@@ -840,7 +841,7 @@ namespace DiplomPonomarev
             Canvas.SetLeft(tbNum, x + width / 2 - tbNum.ActualWidth / 2);
             Canvas.SetTop(tbNum, y + height - tbNum.ActualHeight - offsetNum);
 
-            canvas.Children.Remove(vr.tbIndex);
+            if (index == -1) canvas.Children.Remove(vr.tbIndex);
             canvas.Children.Add(tbIndex);
             tbIndex.Measure(new Size());
             tbIndex.Arrange(new Rect());
@@ -850,13 +851,25 @@ namespace DiplomPonomarev
             vr.rec = r;
             vr.tbNum = tbNum;
             vr.tbIndex = tbIndex;
+            vr.index = index == -1 ? vr.index : index;
         }
 
-        public void UnlockRecs()
+        public void UnlockRecs(bool newIndexes = false)
         {
+            if (newIndexes)
+            {
+                for (int i = 0; i < canvas.Children.Count; i++)
+                {
+                    var child = canvas.Children[i];
+                    if (child is TextBlock && ((TextBlock)child).Foreground != Brushes.White)
+                    {
+                        canvas.Children.Remove(child);
+                    }
+                }
+            }
             for (int i = 0; i < recs.Count; i++)
             {
-                UnlockRec(recs[i]);
+                UnlockRec(recs[i], newIndexes ? i : -1);
             }
         }
 
@@ -921,7 +934,14 @@ namespace DiplomPonomarev
         {
             return Task.Run(() =>
             {
-                if (recs.Count < 1) return;
+                if (recs.Count < 2)
+                {
+                    SafeInvoke(() =>
+                    {
+                        SetEnabledSorting(true);
+                    });
+                    stopSort = sorting = false;
+                };
                 sorting = true;
                 VisualRec recjPrev = null, reciPrev = null;
                 for (int i = 0; i < recs.Count - 1; i++)
@@ -956,7 +976,7 @@ namespace DiplomPonomarev
                         });
                         Thread.Sleep((int)(animMSDefualt * animSpeed));
                        
-                        if ((asc && recs[j].num < recs[i].num) || (!asc && recs[j].num > recs[i].num))
+                        if (asc ? recs[j].num < recs[i].num : recs[j].num > recs[i].num)
                         {
                             fullSwapEnd = false;
                             SafeInvoke(() =>
@@ -1042,6 +1062,256 @@ namespace DiplomPonomarev
             });
         }
 
+        public Task VisualSortInsertion(bool asc = true)
+        {
+            return Task.Run(() =>
+            {
+                if (recs.Count < 2)
+                {
+                    SafeInvoke(() =>
+                    {
+                        SetEnabledSorting(true);
+                    });
+                    stopSort = sorting = false;
+                };
+                sorting = true;
+                VisualRec recjPrev = null, reciPrev = null;
+                for (int i = 1; i < recs.Count; i++)
+                {
+                    VisualRec cur = recs[i];
+                    int j = i;
+                    bool needTransform = j > 0 && (asc ? cur.num < recs[j - 1].num : cur.num > recs[j - 1].num);
+                    if (needTransform)
+                    {
+                        SafeInvoke(() =>
+                        {
+                            reciHeight = cur.rec.Height;
+                            reciTop = Canvas.GetTop(cur.rec);
+                            Canvas.SetZIndex(cur.rec, 9998);
+                            Canvas.SetZIndex(cur.tbNum, 9999);
+
+                            //if (reciPrev != null && reciPrev != recs[i])
+                            //{
+                            //    reciPrev.rec.Fill = Brushes.Black;
+                            //    reciPrev.tbIndex.Inlines.Clear();
+                            //    reciPrev.tbIndex.Text = reciPrev.index.ToString();
+                            //}
+                            cur.rec.Fill = Brushes.Blue;
+                            Run runi = new Run(cur.tbIndex.Text);
+                            runi.Foreground = Brushes.Blue;
+                            cur.tbIndex.Text = "";
+                            cur.tbIndex.Inlines.Add(new Bold(runi));
+
+                            transformingDown = false;
+                            fullSwapEnd = false;
+                            TransformRecDown(cur);
+                        });
+                        while (!fullSwapEnd) { }
+                    }
+                    while (j > 0 && (asc ? cur.num < recs[j - 1].num : cur.num > recs[j - 1].num))
+                    {
+                        Thread.Sleep((int)(animMSDefualt * animSpeed));
+
+                        fullSwapEnd = false;
+                        SafeInvoke(() =>
+                        {
+
+                            Canvas.SetZIndex(recs[j - 1].rec, 9996);
+                            Canvas.SetZIndex(recs[j - 1].tbNum, 9997);
+
+                            ReplaceRec(j - 1, j);
+                        });
+
+                        while (!fullSwapEnd) { }
+                        SafeInvoke(() =>
+                        {
+                            Canvas.SetZIndex(recs[i].rec, 0);
+                            Canvas.SetZIndex(recs[j].rec, 1);
+                            Canvas.SetZIndex(recs[i].tbNum, 2);
+                            Canvas.SetZIndex(recs[j].tbNum, 3);
+                        });
+                        j--;
+                        if (stopSort)
+                        {
+                            fullSwapEnd = false;
+                            SafeInvoke(() =>
+                            {
+                                MoveTempCircle(cur, j);
+                            });
+                            while (!fullSwapEnd) { }
+                            SafeInvoke(() =>
+                            {
+                                UnlockRecs();
+                                SetEnabledSorting(true);
+                            });
+                            stopSort = sorting = false;
+                            return;
+                        }
+                    }
+                    Thread.Sleep((int)(animMSDefualt * animSpeed));
+                    if (needTransform)
+                    {
+                        fullSwapEnd = false;
+                        SafeInvoke(() =>
+                        {
+                            MoveTempCircle(cur, j);
+                        });
+                        while (!fullSwapEnd) { }
+                    }
+                }
+
+                //for (int i = 2; i > -1; i--)
+                //{
+                //    SafeInvoke(() =>
+                //    {
+                //        try
+                //        {
+                //            recs[recs.Count - i - 1].rec.Fill = Brushes.Black;
+                //        }
+                //        catch { }
+                //    });
+                //}
+                SafeInvoke(() =>
+                {
+                    UnlockRecs();
+                    SetEnabledSorting(true);
+                });
+                stopSort = sorting = false;
+            });
+        }
+
+        public Task VisualSortQuick(bool asc = true)
+        {
+            return Task.Run(() =>
+            {
+                if (recs.Count < 2)
+                {
+                    SafeInvoke(() =>
+                    {
+                        SetEnabledSorting(true);
+                    });
+                    stopSort = sorting = false;
+                };
+                sorting = true;
+                VisualRec recjPrev = null, reciPrev = null;
+                for (int i = 1; i < recs.Count; i++)
+                {
+                    for (int j = i + 1; j < recs.Count; j++)
+                    {
+                        SafeInvoke(() =>
+                        {
+                            if (reciPrev != null && reciPrev != recs[i])
+                            {
+                                reciPrev.rec.Fill = Brushes.Black;
+                                reciPrev.tbIndex.Inlines.Clear();
+                                reciPrev.tbIndex.Text = reciPrev.index.ToString();
+                            }
+                            recs[i].rec.Fill = Brushes.Blue;
+                            Run runi = new Run(recs[i].tbIndex.Text);
+                            runi.Foreground = Brushes.Blue;
+                            recs[i].tbIndex.Text = "";
+                            recs[i].tbIndex.Inlines.Add(new Bold(runi));
+
+                            if (recjPrev != null)
+                            {
+                                recjPrev.rec.Fill = Brushes.Black;
+                                recjPrev.tbIndex.Inlines.Clear();
+                                recjPrev.tbIndex.Text = recjPrev.index.ToString();
+                            }
+                            recs[j].rec.Fill = Brushes.Red;
+                            Run runj = new Run(recs[j].tbIndex.Text);
+                            runj.Foreground = Brushes.Red;
+                            recs[j].tbIndex.Text = "";
+                            recs[j].tbIndex.Inlines.Add(new Bold(runj));
+                        });
+                        Thread.Sleep((int)(animMSDefualt * animSpeed));
+
+                        if ((asc && recs[j].num < recs[i].num) || (!asc && recs[j].num > recs[i].num))
+                        {
+                            fullSwapEnd = false;
+                            SafeInvoke(() =>
+                            {
+                                VisualRec r = recs[i];
+                                recs[i] = recs[j];
+                                recs[j] = r;
+
+                                TextBlock tb = recs[i].tbIndex;
+                                recs[i].tbIndex = recs[j].tbIndex;
+                                recs[j].tbIndex = tb;
+
+                                int ind = recs[i].index;
+                                recs[i].index = recs[j].index;
+                                recs[j].index = ind;
+
+                                reci = recs[i];
+                                recj = recs[j];
+                                reciHeight = reci.rec.Height;
+                                reciTop = Canvas.GetTop(reci.rec);
+                                recjHeight = recj.rec.Height;
+                                recjTop = Canvas.GetTop(recj.rec);
+
+                                Canvas.SetZIndex(recs[i].rec, 9996);
+                                Canvas.SetZIndex(recs[j].rec, 9997);
+                                Canvas.SetZIndex(recs[i].tbNum, 9998);
+                                Canvas.SetZIndex(recs[j].tbNum, 9999);
+                                if (!animateCircles)
+                                {
+                                    animateCirclesStart = false;
+                                    SwapRecs(recs[i], recs[j]);
+                                }
+                                else
+                                {
+                                    animateCirclesStart = true;
+                                    transformingDown = true;
+                                    TransformRecDown(recs[i]);
+                                    TransformRecDown(recs[j]);
+                                }
+                            });
+                        }
+                        reciPrev = recs[i];
+                        recjPrev = recs[j];
+
+                        while (!fullSwapEnd) { }
+                        if (stopSort)
+                        {
+                            SafeInvoke(() =>
+                            {
+                                UnlockRecs();
+                                SetEnabledSorting(true);
+                            });
+                            stopSort = sorting = false;
+                            return;
+                        }
+                        SafeInvoke(() =>
+                        {
+                            Canvas.SetZIndex(recs[i].rec, 0);
+                            Canvas.SetZIndex(recs[j].rec, 1);
+                            Canvas.SetZIndex(recs[i].tbNum, 2);
+                            Canvas.SetZIndex(recs[j].tbNum, 3);
+                        });
+                    }
+                }
+
+                for (int i = 2; i > -1; i--)
+                {
+                    SafeInvoke(() =>
+                    {
+                        try
+                        {
+                            recs[recs.Count - i - 1].rec.Fill = Brushes.Black;
+                        }
+                        catch { }
+                    });
+                }
+                SafeInvoke(() =>
+                {
+                    UnlockRecs();
+                    SetEnabledSorting(true);
+                });
+                stopSort = sorting = false;
+            });
+        }
+
         void storybSwap_Completed(object sender, EventArgs e)
         {
             recsSwaping--;
@@ -1079,6 +1349,96 @@ namespace DiplomPonomarev
             animSwapLeft.To = tb2Left - distance;
             Storyboard.SetTarget(animSwapLeft, r2.tbNum);
             graphicsComponent.storybSwap.Begin(graphicsComponent);
+        }
+
+        bool movingTempCircle = false, replacingRec = false;
+        void storybMoveLeft_Completed(object sender, EventArgs e)
+        {
+            replaceCounter--;
+            if (replaceCounter == 0)
+            {
+                if (replacingRec)
+                {
+                    recs[indexToTemp] = recs[indexFromTemp];
+                    recs[indexFromTemp] = new VisualRec(recReplaceFrom.rec, recReplaceFrom.tbNum, recReplaceFrom.tbIndex, recReplaceFrom.num, indexFromTemp);
+                    recs[indexToTemp].index = recReplaceTo.index;
+                    recs[indexToTemp].tbIndex = recReplaceTo.tbIndex;
+                    replacingRec = false;
+                    fullSwapEnd = true;
+                }
+                else if (movingTempCircle)
+                {
+                    recReplaceFrom.index = recs[indexToTemp].index;
+                    recReplaceFrom.tbIndex = recs[indexToTemp].tbIndex;
+                    recs[indexToTemp] = recReplaceFrom;
+                    movingTempCircle = false;
+                    TransformRecUp(recReplaceFrom, reciHeight, reciTop);
+                }
+            }
+        }
+
+        void MoveTempCircle(VisualRec cur, int indexTo)
+        {
+            movingTempCircle = true;
+            indexToTemp = indexTo;
+            replaceCounter = 2;
+            recReplaceFrom = cur;
+
+            double x = offsetSides + indexTo * (recWidth + offsetBetween);
+            animMoveLeft.To = x;
+            Storyboard.SetTarget(animMoveLeft, cur.rec);
+            graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+
+            animMoveLeft.To = x + recWidth / 2 - cur.tbNum.ActualWidth / 2;
+            Storyboard.SetTarget(animMoveLeft, cur.tbNum);
+            graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+        }
+
+        VisualRec recReplaceFrom, recReplaceTo;
+        int indexFromTemp = 0, indexToTemp = 0, replaceCounter = 0; 
+        public void ReplaceRec(int indexFrom, int indexTo)
+        {
+            indexFromTemp = indexFrom; indexToTemp = indexTo;
+            recReplaceFrom = recs[indexFrom]; recReplaceTo = recs[indexTo]; 
+            double recFromLeft = Canvas.GetLeft(recReplaceFrom.rec), recToLeft = indexTo * (offsetBetween + recWidth) + offsetSides;
+            double tbFromLeft = Canvas.GetLeft(recReplaceFrom.tbNum), tbToLeft = recToLeft + recWidth / 2 - recReplaceFrom.tbNum.ActualWidth / 2;
+
+            replaceCounter = 2;
+
+            replacingRec = true;
+            animMoveLeft.To = recToLeft;
+            Storyboard.SetTarget(animMoveLeft, recReplaceFrom.rec);
+            graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+
+            animMoveLeft.To = tbToLeft;
+            Storyboard.SetTarget(animMoveLeft, recReplaceFrom.tbNum);
+            graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
+        }
+
+        private VisualRec CloneRec(VisualRec recFrom)
+        {
+            double height = recFrom.rec.Height, width = recFrom.rec.Width, x = Canvas.GetLeft(recFrom.rec), y = Canvas.GetTop(recFrom.rec);
+
+            Rectangle r = new Rectangle();
+            r.Width = width; r.Height = height; r.Fill = Brushes.Black;
+            r.RadiusX = recRadius; r.RadiusY = recRadius;
+            Canvas.SetLeft(r, x);
+            Canvas.SetTop(r, y);
+            canvas.Children.Add(r);
+
+            TextBlock tbNum = new TextBlock();
+            tbNum.Foreground = Brushes.White;
+            tbNum.Width = Double.NaN;
+            tbNum.Height = Double.NaN;
+            tbNum.Text = recFrom.tbNum.Text;
+
+            canvas.Children.Add(tbNum);
+            tbNum.Measure(new Size());
+            tbNum.Arrange(new Rect());
+            Canvas.SetLeft(tbNum, x + width / 2 - tbNum.ActualWidth / 2);
+            Canvas.SetTop(tbNum, y + height - tbNum.ActualHeight - offsetNum);
+
+            return new VisualRec(r, tbNum, recFrom.tbIndex, recFrom.num, recFrom.index);
         }
 
         void storybTransform_Completed(object sender, EventArgs e)
@@ -1161,16 +1521,32 @@ namespace DiplomPonomarev
             }
         }
 
-        private void toolStripButton4_Click(object sender, EventArgs e)
+        void Sort(bool asc = true)
         {
             SetEnabledSorting(false);
-            VisualSortBubble();
+            if (sortType == SortType.Bubble) VisualSortBubble(asc);
+            else if (sortType == SortType.Insertion) VisualSortInsertion(asc);
+            else VisualSortQuick(asc);
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            Sort();
         }
 
         private void btnSortDesc_Click(object sender, EventArgs e)
         {
-            SetEnabledSorting(false);
-            VisualSortBubble(false);
+            Sort(false);
+        }
+
+        private void miSortAsc_Click(object sender, EventArgs e)
+        {
+            Sort();
+        }
+
+        private void miSortDesc_Click(object sender, EventArgs e)
+        {
+            Sort(false);
         }
 
         private void toolStripButton2_Click_1(object sender, EventArgs e)
@@ -1391,18 +1767,6 @@ namespace DiplomPonomarev
         private void miSortQuick_Click(object sender, EventArgs e)
         {
             cmbSortType.SelectedIndex = 2;
-        }
-
-        private void miSortAsc_Click(object sender, EventArgs e)
-        {
-            SetEnabledSorting(false);
-            VisualSortBubble();
-        }
-
-        private void miSortDesc_Click(object sender, EventArgs e)
-        {
-            SetEnabledSorting(false);
-            VisualSortBubble(false);
         }
 
         private void miSortStop_Click(object sender, EventArgs e)
