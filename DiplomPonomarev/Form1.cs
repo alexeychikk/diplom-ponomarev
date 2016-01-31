@@ -41,6 +41,7 @@ namespace DiplomPonomarev
         public double animSpeedMax = 10;
         public double animMSDefualt = 200;
         public double animMSSwap = 500;
+        public double animMSMove = 400;
         public int startRecsCount;
         public int recsPerAction;
         public int addRecsCount;
@@ -213,11 +214,11 @@ namespace DiplomPonomarev
 
             animMoveLeft = new DoubleAnimation();
             Storyboard.SetTargetProperty(animMoveLeft, new PropertyPath(Canvas.LeftProperty));
-            animMoveLeft.Duration = TimeSpan.FromMilliseconds(400);
+            animMoveLeft.Duration = TimeSpan.FromMilliseconds(animMSMove);
 
             animMoveTop = new DoubleAnimation();
             Storyboard.SetTargetProperty(animMoveTop, new PropertyPath(Canvas.TopProperty));
-            animMoveTop.Duration = TimeSpan.FromMilliseconds(400);
+            animMoveTop.Duration = TimeSpan.FromMilliseconds(animMSMove);
 
             graphicsComponent.storybAppear.Children.Add(animAppearOpacity);
             graphicsComponent.storybDisappear.Children.Add(animDisappearOpacity);
@@ -326,7 +327,8 @@ namespace DiplomPonomarev
             Task.Run(() =>
             {
                 int recsCountPrev = 0;
-                double topHead = 0, topHeadPrev = 0, topTail = 0, topTailPrev = 0, recWidthPrev = 0;
+                double topRecFirst = 0, topRecFirstPrev = 0, topRecLast = 0, topRecLastPrev = 0, recWidthPrev = 0,
+                    recRadiusFirst = 0, recRadiusLast = 0;
                 StructType structTypePrev = StructType.Stack;
                 while (true)
                 {
@@ -336,8 +338,16 @@ namespace DiplomPonomarev
                         VisualRec r2 = recs.Last();
                         SafeInvoke(() =>
                         {
-                            if (r1 != null) topHead = Canvas.GetTop(r1.rec);
-                            if (r2 != null) topTail = Canvas.GetTop(r2.rec);
+                            if (r1 != null)
+                            {
+                                topRecFirst = Canvas.GetTop(r1.rec);
+                                recRadiusFirst = r1.rec.RadiusX;
+                            }
+                            if (r2 != null)
+                            {
+                                topRecLast = Canvas.GetTop(r2.rec);
+                                recRadiusLast = r2.rec.RadiusX;
+                            }
                         });
                     }
                     if (recWidthPrev != recWidth)
@@ -350,7 +360,7 @@ namespace DiplomPonomarev
                             animMoveLeft.To = (recs.Count - 1) * (recWidth + offsetBetween) + offsetSides;
                             Storyboard.SetTarget(animMoveLeft, borderTail);
                             graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
-                            animMoveLeft.Duration = TimeSpan.FromMilliseconds(400);
+                            animMoveLeft.Duration = TimeSpan.FromMilliseconds(animMSMove);
                             animMoveLeft.BeginTime = TimeSpan.FromMilliseconds(0);
                             recWidthPrev = recWidth;
                         });
@@ -365,7 +375,7 @@ namespace DiplomPonomarev
                                 Storyboard.SetTarget(animMoveLeft, borderHead);
                                 graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
 
-                                double x = topHead - borderHead.ActualHeight - offsetLabel;
+                                double x = topRecFirst - borderHead.ActualHeight - offsetLabel;
                                 if (structType != StructType.Stack) x -= (borderTail.ActualHeight + offsetLabel);
                                 animMoveTop.To = x;
                                 Storyboard.SetTarget(animMoveTop, borderHead);
@@ -375,7 +385,7 @@ namespace DiplomPonomarev
                                 Storyboard.SetTarget(animMoveLeft, borderTail);
                                 graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
 
-                                animMoveTop.To = topTail - borderTail.ActualHeight - offsetLabel;
+                                animMoveTop.To = topRecLast - borderTail.ActualHeight - offsetLabel;
                                 Storyboard.SetTarget(animMoveTop, borderTail);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
                             });
@@ -407,7 +417,7 @@ namespace DiplomPonomarev
                                 Storyboard.SetTarget(animMoveLeft, borderHead);
                                 graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
 
-                                double x = topHead - borderHead.ActualHeight - offsetLabel;
+                                double x = topRecFirst - borderHead.ActualHeight - offsetLabel;
                                 if (structType != StructType.Stack) x -= (borderTail.ActualHeight + offsetLabel);
                                 animMoveTop.To = x;
                                 Storyboard.SetTarget(animMoveTop, borderHead);
@@ -417,7 +427,7 @@ namespace DiplomPonomarev
                                 Storyboard.SetTarget(animMoveLeft, borderTail);
                                 graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
 
-                                animMoveTop.To = topTail - borderTail.ActualHeight - offsetLabel;
+                                animMoveTop.To = topRecLast - borderTail.ActualHeight - offsetLabel;
                                 Storyboard.SetTarget(animMoveTop, borderTail);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
                             });
@@ -426,7 +436,7 @@ namespace DiplomPonomarev
                         {
                             SafeInvoke(() =>
                             {
-                                animMoveTop.To = topHead - borderHead.ActualHeight - offsetLabel;
+                                animMoveTop.To = topRecFirst - borderHead.ActualHeight - offsetLabel;
                                 Storyboard.SetTarget(animMoveTop, borderHead);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
 
@@ -437,7 +447,7 @@ namespace DiplomPonomarev
                                     animMoveLeft.To = (recs.Count - 1) * (recWidth + offsetBetween) + offsetSides;
                                     Storyboard.SetTarget(animMoveLeft, borderTail);
                                     graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
-                                    animMoveLeft.Duration = TimeSpan.FromMilliseconds(400);
+                                    animMoveLeft.Duration = TimeSpan.FromMilliseconds(animMSMove);
                                     animMoveLeft.BeginTime = TimeSpan.FromMilliseconds(0);
                                 }
                                 else
@@ -446,7 +456,7 @@ namespace DiplomPonomarev
                                     Storyboard.SetTarget(animMoveLeft, borderTail);
                                     graphicsComponent.storybMoveLeft.Begin(graphicsComponent);
                                 }
-                                animMoveTop.To = topTail - borderTail.ActualHeight - offsetLabel;
+                                animMoveTop.To = topRecLast - borderTail.ActualHeight - offsetLabel;
                                 Storyboard.SetTarget(animMoveTop, borderTail);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
                             });
@@ -455,29 +465,29 @@ namespace DiplomPonomarev
                     }
                     else
                     {
-                        if ((fullSwapEnd || !animateCircles) && topHead != topHeadPrev)
+                        if (recRadiusFirst == recRadius && topRecFirst != topRecFirstPrev)
                         {
                             SafeInvoke(() =>
                             {
-                                double x = topHead - borderHead.ActualHeight - offsetLabel;
+                                double x = topRecFirst - borderHead.ActualHeight - offsetLabel;
                                 if (recs.Count == 1 && structType != StructType.Stack) x -= (borderTail.ActualHeight + offsetLabel);
                                 animMoveTop.To = x;
                                 Storyboard.SetTarget(animMoveTop, borderHead);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
                             });
                         }
-                        if ((fullSwapEnd || !animateCircles) && topTail != topTailPrev)
+                        if (recRadiusLast == recRadius && topRecLast != topRecLastPrev)
                         {
                             SafeInvoke(() =>
                             {
-                                animMoveTop.To = topTail - borderTail.ActualHeight - offsetLabel;
+                                animMoveTop.To = topRecLast - borderTail.ActualHeight - offsetLabel;
                                 Storyboard.SetTarget(animMoveTop, borderTail);
                                 graphicsComponent.storybMoveTop.Begin(graphicsComponent);
                             });
                         }
                     }
-                    topHeadPrev = topHead;
-                    topTailPrev = topTail;
+                    topRecFirstPrev = topRecFirst;
+                    topRecLastPrev = topRecLast;
                     Thread.Sleep(10);
                 }
             });
@@ -1075,33 +1085,28 @@ namespace DiplomPonomarev
                     stopSort = sorting = false;
                 };
                 sorting = true;
-                VisualRec recjPrev = null, reciPrev = null;
                 for (int i = 1; i < recs.Count; i++)
                 {
                     VisualRec cur = recs[i];
                     int j = i;
+                    SafeInvoke(() =>
+                    {
+                        reciHeight = cur.rec.Height;
+                        reciTop = Canvas.GetTop(cur.rec);
+                        Canvas.SetZIndex(cur.rec, 9998);
+                        Canvas.SetZIndex(cur.tbNum, 9999);
+
+                        cur.rec.Fill = Brushes.Blue;
+                        Run runi = new Run(cur.tbIndex.Text);
+                        runi.Foreground = Brushes.Blue;
+                        cur.tbIndex.Text = "";
+                        cur.tbIndex.Inlines.Add(new Bold(runi));
+                    });
                     bool needTransform = j > 0 && (asc ? cur.num < recs[j - 1].num : cur.num > recs[j - 1].num);
                     if (needTransform)
                     {
                         SafeInvoke(() =>
                         {
-                            reciHeight = cur.rec.Height;
-                            reciTop = Canvas.GetTop(cur.rec);
-                            Canvas.SetZIndex(cur.rec, 9998);
-                            Canvas.SetZIndex(cur.tbNum, 9999);
-
-                            //if (reciPrev != null && reciPrev != recs[i])
-                            //{
-                            //    reciPrev.rec.Fill = Brushes.Black;
-                            //    reciPrev.tbIndex.Inlines.Clear();
-                            //    reciPrev.tbIndex.Text = reciPrev.index.ToString();
-                            //}
-                            cur.rec.Fill = Brushes.Blue;
-                            Run runi = new Run(cur.tbIndex.Text);
-                            runi.Foreground = Brushes.Blue;
-                            cur.tbIndex.Text = "";
-                            cur.tbIndex.Inlines.Add(new Bold(runi));
-
                             transformingDown = false;
                             fullSwapEnd = false;
                             TransformRecDown(cur);
@@ -1119,16 +1124,23 @@ namespace DiplomPonomarev
                             Canvas.SetZIndex(recs[j - 1].rec, 9996);
                             Canvas.SetZIndex(recs[j - 1].tbNum, 9997);
 
+                            recs[j - 1].rec.Fill = Brushes.Red;
+                            Run runi = new Run(recs[j - 1].tbIndex.Text);
+                            runi.Foreground = Brushes.Red;
+                            recs[j - 1].tbIndex.Text = "";
+                            recs[j - 1].tbIndex.Inlines.Add(new Bold(runi));
+
                             ReplaceRec(j - 1, j);
                         });
 
                         while (!fullSwapEnd) { }
                         SafeInvoke(() =>
                         {
-                            Canvas.SetZIndex(recs[i].rec, 0);
-                            Canvas.SetZIndex(recs[j].rec, 1);
-                            Canvas.SetZIndex(recs[i].tbNum, 2);
-                            Canvas.SetZIndex(recs[j].tbNum, 3);
+                            recs[j].rec.Fill = Brushes.Black;
+                            recs[j - 1].tbIndex.Inlines.Clear();
+                            recs[j - 1].tbIndex.Text = recs[j - 1].index.ToString();
+                            Canvas.SetZIndex(recs[j].rec, 0);
+                            Canvas.SetZIndex(recs[j].tbNum, 1);
                         });
                         j--;
                         if (stopSort)
@@ -1158,19 +1170,15 @@ namespace DiplomPonomarev
                         });
                         while (!fullSwapEnd) { }
                     }
+                    SafeInvoke(() =>
+                    {
+                        cur.rec.Fill = Brushes.Black;
+                        recs[i].tbIndex.Inlines.Clear();
+                        recs[i].tbIndex.Text = cur.index.ToString();
+                        Canvas.SetZIndex(cur.rec, 2);
+                        Canvas.SetZIndex(cur.tbNum, 3);
+                    });
                 }
-
-                //for (int i = 2; i > -1; i--)
-                //{
-                //    SafeInvoke(() =>
-                //    {
-                //        try
-                //        {
-                //            recs[recs.Count - i - 1].rec.Fill = Brushes.Black;
-                //        }
-                //        catch { }
-                //    });
-                //}
                 SafeInvoke(() =>
                 {
                     UnlockRecs();
@@ -1567,7 +1575,8 @@ namespace DiplomPonomarev
 
         public void SetAnimSpeed()
         {
-            animSwapLeft.Duration = new Duration(TimeSpan.FromMilliseconds(animMSSwap * animSpeed));
+            animSwapLeft.Duration = TimeSpan.FromMilliseconds(animMSSwap * animSpeed);
+            animMoveLeft.Duration = TimeSpan.FromMilliseconds(animMSMove * animSpeed);
             double animSpeedInverse = Math.Round(1 / animSpeed, 2);
             lblSpeed.Text = animSpeedInverse + "x";
             animateCircles = !(animSpeedInverse > 2);
