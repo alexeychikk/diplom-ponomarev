@@ -1832,7 +1832,28 @@ namespace DiplomPonomarev
         {
             string text = StringUtil.Decrypt("2yljXKkRhLP1A+Zn6cPxLfZrjh2A80pAyyzsDBwjaCIXDexaV1grZZsn9O/8LXYszQ8lP8iBUVinY7ZJNENMOEEXUQNP5Dv4LM+Nhrgi16fsPAy9cDwwEH8Ic9ca6W/ynqgMHz8qxMiFty+5fBNnQbci7tzEWD6nLt8h9BzvO0w=");
             string caption = StringUtil.Decrypt("F14XkANCdeMpq36n8kgEOc7Otn8cVHgRFUfD+tz4GajJwGj0ulFyWw==");
-            System.Windows.Forms.MessageBox.Show(text, caption);
+            System.Windows.MessageBox.Show(text, caption);
+        }
+
+        private void miInfoStack_Click(object sender, EventArgs e)
+        {
+            System.Windows.MessageBox.Show("Стек – структура даних з методом доступу до елементів LIFO(Last In – First Out, «останнім прийшов – першим вийшов»). Одне з найбільш важливих застосувань стека – організація виклику підпрограм. У точці виклику на стеку зберігається адреса повернення з підпрограми після її завершення. При кожному вкладеному виклику підпрограм на стек додаються нові адреси повернення. При кожній операції повернення з підпрограми, зі стека знімається адреса повернення і управління передається по ньому.", 
+                "Інформація - Стек");
+        }
+
+        private void miInfoQueue_Click(object sender, EventArgs e)
+        {
+            System.Windows.MessageBox.Show("Черга – структура даних, що дозволяє додавати елементи лише в кінець списку, і витягувати їх з його початку. Вона функціонує за принципом FIFO(First In, First Out - «першим прийшов – першим вийшов»). Стандартний набір операцій виконуваних над чергами, збігається з тим, що використовується при обробці стеків:\n" + 
+                "- додавання елемента;\n" + 
+                "- видалення елемента;\n" +
+                "- читання першого елемента.",
+                "Інформація - Черга");
+        }
+
+        private void miInfoList_Click(object sender, EventArgs e)
+        {
+            System.Windows.MessageBox.Show("Списком називається структура даних, кожен елемент якої за допомогою вказівника зв’язується з наступним елементом. Кожен елемент пов’язаного списку, по-перше, зберігає певну інформацію, по-друге, вказує на наступний за ним елемент. Так як елемент списку зберігає різнотипні частини, то його природно уявити записом, в який в одному полі розташовується об’єкт, а в іншому – вказівник на наступний запис такого ж типу. Лише на найперший елемент списку (голову) є окремий вказівник. Останній елемент списку нікуди не вказує.",
+                "Інформація - Список");
         }
     }
 }

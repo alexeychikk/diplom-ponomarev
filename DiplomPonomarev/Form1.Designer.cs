@@ -97,12 +97,16 @@ namespace DiplomPonomarev
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.graphicsComponent = new GraphicsComponent.GraphicsComponent();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblIterations = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.iteratorI = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.iteratorJ = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lblIterations = new System.Windows.Forms.ToolStripStatusLabel();
+            this.інформаціяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miInfoStack = new System.Windows.Forms.ToolStripMenuItem();
+            this.miInfoQueue = new System.Windows.Forms.ToolStripMenuItem();
+            this.miInfoList = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlDevice.SuspendLayout();
@@ -115,7 +119,8 @@ namespace DiplomPonomarev
             this.файлToolStripMenuItem,
             this.структураToolStripMenuItem,
             this.сортуванняToolStripMenuItem,
-            this.toolStripMenuItem2});
+            this.toolStripMenuItem2,
+            this.інформаціяToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(984, 24);
@@ -306,21 +311,21 @@ namespace DiplomPonomarev
             this.miStructStack.Checked = true;
             this.miStructStack.CheckState = System.Windows.Forms.CheckState.Checked;
             this.miStructStack.Name = "miStructStack";
-            this.miStructStack.Size = new System.Drawing.Size(115, 22);
+            this.miStructStack.Size = new System.Drawing.Size(152, 22);
             this.miStructStack.Text = "Стек";
             this.miStructStack.Click += new System.EventHandler(this.miStructStack_Click);
             // 
             // miStructQueue
             // 
             this.miStructQueue.Name = "miStructQueue";
-            this.miStructQueue.Size = new System.Drawing.Size(115, 22);
+            this.miStructQueue.Size = new System.Drawing.Size(152, 22);
             this.miStructQueue.Text = "Черга";
             this.miStructQueue.Click += new System.EventHandler(this.miStructQueue_Click);
             // 
             // miStructList
             // 
             this.miStructList.Name = "miStructList";
-            this.miStructList.Size = new System.Drawing.Size(115, 22);
+            this.miStructList.Size = new System.Drawing.Size(152, 22);
             this.miStructList.Text = "Список";
             this.miStructList.Click += new System.EventHandler(this.miStructList_Click);
             // 
@@ -667,6 +672,19 @@ namespace DiplomPonomarev
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(106, 17);
+            this.toolStripStatusLabel3.Text = "Кількість ітерацій:";
+            // 
+            // lblIterations
+            // 
+            this.lblIterations.Margin = new System.Windows.Forms.Padding(0, 3, 16, 2);
+            this.lblIterations.Name = "lblIterations";
+            this.lblIterations.Size = new System.Drawing.Size(13, 17);
+            this.lblIterations.Text = "0";
+            // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
@@ -692,18 +710,36 @@ namespace DiplomPonomarev
             this.iteratorJ.Size = new System.Drawing.Size(13, 17);
             this.iteratorJ.Text = "0";
             // 
-            // toolStripStatusLabel3
+            // інформаціяToolStripMenuItem
             // 
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(106, 17);
-            this.toolStripStatusLabel3.Text = "Кількість ітерацій:";
+            this.інформаціяToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miInfoStack,
+            this.miInfoQueue,
+            this.miInfoList});
+            this.інформаціяToolStripMenuItem.Name = "інформаціяToolStripMenuItem";
+            this.інформаціяToolStripMenuItem.Size = new System.Drawing.Size(83, 20);
+            this.інформаціяToolStripMenuItem.Text = "Інформація";
             // 
-            // lblIterations
+            // miInfoStack
             // 
-            this.lblIterations.Margin = new System.Windows.Forms.Padding(0, 3, 16, 2);
-            this.lblIterations.Name = "lblIterations";
-            this.lblIterations.Size = new System.Drawing.Size(13, 17);
-            this.lblIterations.Text = "0";
+            this.miInfoStack.Name = "miInfoStack";
+            this.miInfoStack.Size = new System.Drawing.Size(152, 22);
+            this.miInfoStack.Text = "Стек";
+            this.miInfoStack.Click += new System.EventHandler(this.miInfoStack_Click);
+            // 
+            // miInfoQueue
+            // 
+            this.miInfoQueue.Name = "miInfoQueue";
+            this.miInfoQueue.Size = new System.Drawing.Size(152, 22);
+            this.miInfoQueue.Text = "Черга";
+            this.miInfoQueue.Click += new System.EventHandler(this.miInfoQueue_Click);
+            // 
+            // miInfoList
+            // 
+            this.miInfoList.Name = "miInfoList";
+            this.miInfoList.Size = new System.Drawing.Size(152, 22);
+            this.miInfoList.Text = "Список";
+            this.miInfoList.Click += new System.EventHandler(this.miInfoList_Click);
             // 
             // Form1
             // 
@@ -804,6 +840,10 @@ namespace DiplomPonomarev
         private ToolStripStatusLabel iteratorJ;
         private ToolStripStatusLabel toolStripStatusLabel3;
         private ToolStripStatusLabel lblIterations;
+        private ToolStripMenuItem інформаціяToolStripMenuItem;
+        private ToolStripMenuItem miInfoStack;
+        private ToolStripMenuItem miInfoQueue;
+        private ToolStripMenuItem miInfoList;
 
     }
 }
