@@ -1667,6 +1667,7 @@ namespace DiplomPonomarev
         {
             structType = (StructType)cmbStructType.SelectedIndex;
             SetEnabledStructType();
+            btnSortAsc.Enabled = btnSortDesc.Enabled = miSortAsc.Enabled = miSortDesc.Enabled = (structType != StructType.Stack);
         }
 
         private void miPushHead_Click(object sender, EventArgs e)
